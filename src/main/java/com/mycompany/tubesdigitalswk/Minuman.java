@@ -10,8 +10,8 @@ package com.mycompany.tubesdigitalswk;
  */
 public class Minuman extends Makanan{
     
-    public Minuman(int id, String nama, float harga, int status) {
-        super(id, nama, harga, status);
+    public Minuman(int id, String nama, float harga, int idStan, int status) {
+        super(id, nama, harga, idStan, status);
     }
-    
+        
 }

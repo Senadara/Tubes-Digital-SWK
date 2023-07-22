@@ -19,18 +19,37 @@ import javax.swing.table.DefaultTableModel;
  */
 public class DisplaySWK extends javax.swing.JFrame {
     
-    private DefaultTableModel model = new DefaultTableModel();
     private Connection con;
+    private DefaultTableModel modelStan = new DefaultTableModel();
+    private DefaultTableModel modelMakan = new DefaultTableModel();
+    private DefaultTableModel modelMinum = new DefaultTableModel();
+    private DefaultTableModel modelKeranjang = new DefaultTableModel();
+    private DefaultTableModel modelMeja = new DefaultTableModel();
     private ArrayList<Stan> stn = new ArrayList<>();
     private ArrayList<Makanan> mkn = new ArrayList<>(); 
     private ArrayList<Minuman> mnm = new ArrayList<>();
     
     void loadKolomStan(){
-        model.addColumn("Nomor Stan");
-        model.addColumn("Nama Stan");
-        model.addColumn("Status");
-        TabelStan.setModel(model);
+        modelStan.addColumn("Nomor Stan");
+        modelStan.addColumn("Nama Stan");
+        modelStan.addColumn("Status");
+        TabelStan.setModel(modelStan);
     }
+    
+    void loadKolomMakan(){
+        modelMakan.addColumn("ID Makanan");
+        modelMakan.addColumn("Nama Makanan");
+        modelMakan.addColumn("Harga");
+        TabelMenuMakanan.setModel(modelMakan);
+    }
+    
+     void loadKolomMinum(){
+        modelMinum.addColumn("ID Minuman");
+        modelMinum.addColumn("Nama Minuman");
+        modelMinum.addColumn("Harga");
+        TabelMenuMinuman.setModel(modelMinum);
+    }
+        
     
     private void loadStan(){
         if(con != null){
@@ -56,10 +75,75 @@ public class DisplaySWK extends javax.swing.JFrame {
         }
     }
     
+    private void loadMenuMakan(){
+        if(con != null){
+            mkn = new ArrayList<>();
+            String kueri = "Select * from makanan;";
+            try{
+                PreparedStatement ps = con.prepareStatement(kueri);
+                ResultSet rs = ps.executeQuery();
+                while(rs.next()){
+                    int id = rs.getInt("ID_Makanan");
+                    String nama = rs.getString("Nama_Makanan");
+                    float harga = rs.getFloat("Harga_Makanan");
+                    int status = rs.getInt("status");
+                    int idStan = rs.getInt("ID_Stan");
+                    
+                    Makanan makanan = new Makanan(id, nama, harga, idStan, status);
+                    mkn.add(makanan);
+                }
+                rs.close();
+                ps.close();
+            }catch(SQLException ex){
+                Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+     private void loadMenuMinum(){
+        if(con != null){
+            mkn = new ArrayList<>();
+            String kueri = "Select * from minuman;";
+            try{
+                PreparedStatement ps = con.prepareStatement(kueri);
+                ResultSet rs = ps.executeQuery();
+                while(rs.next()){
+                    int id = rs.getInt("ID_Minuman");
+                    String nama = rs.getString("Nama_Minuman");
+                    float harga = rs.getFloat("Harga_Minuman");
+                    int status = rs.getInt("status");
+                    int idStan = rs.getInt("ID_Stan");
+                    
+                    Minuman minuman = new Minuman(id, nama, harga, idStan, status);
+                    mnm.add(minuman);
+                }
+                rs.close();
+                ps.close();
+            }catch(SQLException ex){
+                Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+     
+    private void tampilMinuman(){
+        modelMinum.setRowCount(0);
+        for(Minuman mn: mnm){
+            modelMinum.addRow(new Object [] {mn.getIdStan(), mn.getNama(), mn.getHarga()});
+        }
+    }
+    
+    
+    private void tampilMakanan(){
+        modelMakan.setRowCount(0);
+        for(Makanan m: mkn){
+            modelMakan.addRow(new Object [] {m.getIdStan(), m.getNama(), m.getHarga()});
+        }
+    }
+    
     private void tampilStan(){
-        model.setRowCount(0);
+        modelStan.setRowCount(0);
         for(Stan s: stn){
-            model.addRow(new Object [] {s.getNomor(),s.getNama(),s.getStatus()});
+            modelStan.addRow(new Object [] {s.getNomor(),s.getNama(),s.getStatus()});
         }
     }
     
@@ -70,9 +154,52 @@ public class DisplaySWK extends javax.swing.JFrame {
     public DisplaySWK() {
         initComponents();
         loadKolomStan();
+        loadKolomMakan();
+        loadKolomMinum();
         con = Koneksi.bukaKoneksi();
         loadStan();
         tampilStan();
+        loadMenuMakan();
+        tampilMakanan();
+        loadMenuMinum();
+        tampilMinuman();
+        
+        
+    }
+    
+    private void reset(){
+        
+    }
+    
+    void cariStanByKeyword(String keyword){
+        if (con != null) {
+        ArrayList<Stan> hasilPencarian = new ArrayList<>();
+        String kueri = "Select * from stan where Nomor_Stan like ? or Nama_Stan like ?";
+        try {
+            PreparedStatement ps = con.prepareStatement(kueri);
+            ps.setString(1, "%" + keyword + "%");
+            ps.setString(2, "%" + keyword + "%");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("ID_Stan");
+                String nama = rs.getString("Nama_Stan");
+                int nomor = rs.getInt("Nomor_Stan");
+                int status = rs.getInt("status");
+                Stan stan = new Stan(id, nomor, nama, status);
+                hasilPencarian.add(stan);
+            }
+            rs.close();
+            ps.close();
+
+            // Update daftarBuku dengan hasil pencarian
+            stn = hasilPencarian;
+            // Tampilkan data hasil pencarian di tabel
+            tampilStan();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
         
     }
 
@@ -91,7 +218,7 @@ public class DisplaySWK extends javax.swing.JFrame {
         TabelStan = new javax.swing.JTable();
         jLabel2 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
-        ButtonTampilkanMenu = new javax.swing.JButton();
+        btnTampilkanMenu = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         TabelMenuMakanan = new javax.swing.JTable();
         jLabel3 = new javax.swing.JLabel();
@@ -132,6 +259,13 @@ public class DisplaySWK extends javax.swing.JFrame {
         jTable4 = new javax.swing.JTable();
         jSeparator3 = new javax.swing.JSeparator();
         jButton5 = new javax.swing.JButton();
+        btnReset = new javax.swing.JButton();
+        TFCariStan = new javax.swing.JTextField();
+        btnCariStan = new javax.swing.JButton();
+        TFCariMakan = new javax.swing.JTextField();
+        TFCariMinum = new javax.swing.JTextField();
+        btnCariMakan = new javax.swing.JButton();
+        btnCariMinum = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -166,10 +300,10 @@ public class DisplaySWK extends javax.swing.JFrame {
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Stan/Warung SWK");
 
-        ButtonTampilkanMenu.setText("Tampilkan Menu");
-        ButtonTampilkanMenu.addActionListener(new java.awt.event.ActionListener() {
+        btnTampilkanMenu.setText("Tampilkan Menu");
+        btnTampilkanMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ButtonTampilkanMenuActionPerformed(evt);
+                btnTampilkanMenuActionPerformed(evt);
             }
         });
 
@@ -466,6 +600,34 @@ public class DisplaySWK extends javax.swing.JFrame {
                 .addContainerGap(54, Short.MAX_VALUE))
         );
 
+        btnReset.setText("Reset");
+        btnReset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetActionPerformed(evt);
+            }
+        });
+
+        btnCariStan.setText("Cari");
+        btnCariStan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCariStanActionPerformed(evt);
+            }
+        });
+
+        btnCariMakan.setText("Cari");
+        btnCariMakan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCariMakanActionPerformed(evt);
+            }
+        });
+
+        btnCariMinum.setText("Cari");
+        btnCariMinum.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCariMinumActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -473,7 +635,6 @@ public class DisplaySWK extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel2)
                     .addComponent(jSeparator1)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -483,7 +644,6 @@ public class DisplaySWK extends javax.swing.JFrame {
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel3)
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addGap(6, 6, 6)
                                         .addComponent(jLabel5)
@@ -493,28 +653,47 @@ public class DisplaySWK extends javax.swing.JFrame {
                                         .addComponent(jLabel7)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(TFPesanMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, 279, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(0, 9, Short.MAX_VALUE)))
+                                .addGap(0, 9, Short.MAX_VALUE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(TFCariMakan, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnCariMakan)))
                         .addGap(39, 39, 39)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 359, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(ButtonKeranjangMinuman, javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jLabel6)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(TFJumlahBeliMinuman))
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jLabel8)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(TFPesanMinuman))))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel4)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(TFCariMinum, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnCariMinum))
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 359, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(ButtonKeranjangMinuman, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(TFJumlahBeliMinuman))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel8)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(TFPesanMinuman)))
                         .addGap(25, 25, 25))
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(ButtonTampilkanMenu)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 773, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(22, 22, 22)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addComponent(btnTampilkanMenu)
+                            .addGap(18, 18, 18)
+                            .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 773, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                            .addComponent(jLabel2)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnCariStan)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(TFCariStan, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -530,36 +709,49 @@ public class DisplaySWK extends javax.swing.JFrame {
                         .addGap(5, 5, 5)
                         .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ButtonTampilkanMenu)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel7)
-                            .addComponent(TFPesanMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel8)
-                            .addComponent(TFPesanMinuman, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(TFJumlahBeliMakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6)
-                            .addComponent(TFJumlahBeliMinuman, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(ButtonKeranjangMakanan)
-                            .addComponent(ButtonKeranjangMinuman))
-                        .addGap(15, 15, 15))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(btnCariStan)
+                                    .addComponent(jLabel2))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(btnTampilkanMenu)
+                                    .addComponent(btnReset))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel4)
+                                    .addComponent(TFCariMakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(TFCariMinum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnCariMakan)
+                                    .addComponent(btnCariMinum))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
+                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel7)
+                                    .addComponent(TFPesanMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel8)
+                                    .addComponent(TFPesanMinuman, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel5)
+                                    .addComponent(TFJumlahBeliMakan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel6)
+                                    .addComponent(TFJumlahBeliMinuman, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(ButtonKeranjangMakanan)
+                                    .addComponent(ButtonKeranjangMinuman))
+                                .addGap(15, 15, 15))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(TFCariStan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(54, 54, 54))
@@ -580,9 +772,12 @@ public class DisplaySWK extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void ButtonTampilkanMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonTampilkanMenuActionPerformed
+    private void btnTampilkanMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTampilkanMenuActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_ButtonTampilkanMenuActionPerformed
+//        int barisTerpilih = TabelStan.getSelectedRow();
+//        int nomor = modelStan.getValueAt(barisTerpilih, 0);
+        
+    }//GEN-LAST:event_btnTampilkanMenuActionPerformed
 
     private void TFPesanMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFPesanMakananActionPerformed
         // TODO add your handling code here:
@@ -608,6 +803,30 @@ public class DisplaySWK extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField8ActionPerformed
 
+    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnResetActionPerformed
+
+    private void btnCariStanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariStanActionPerformed
+        // TODO add your handling code here:
+        String keyword = TFCariStan.getText().trim();
+        if(keyword.length() == 0){
+            loadStan();
+            tampilStan();
+        }else{
+            cariStanByKeyword(keyword);
+            tampilStan();
+        }         
+    }//GEN-LAST:event_btnCariStanActionPerformed
+
+    private void btnCariMakanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariMakanActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCariMakanActionPerformed
+
+    private void btnCariMinumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariMinumActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnCariMinumActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -617,7 +836,9 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JButton ButtonHapusPesanan;
     private javax.swing.JButton ButtonKeranjangMakanan;
     private javax.swing.JButton ButtonKeranjangMinuman;
-    private javax.swing.JButton ButtonTampilkanMenu;
+    private javax.swing.JTextField TFCariMakan;
+    private javax.swing.JTextField TFCariMinum;
+    private javax.swing.JTextField TFCariStan;
     private javax.swing.JTextField TFJumlahBeliMakan;
     private javax.swing.JTextField TFJumlahBeliMinuman;
     private javax.swing.JTextField TFPesanMakanan;
@@ -626,6 +847,11 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JTable TabelMenuMakanan;
     private javax.swing.JTable TabelMenuMinuman;
     private javax.swing.JTable TabelStan;
+    private javax.swing.JButton btnCariMakan;
+    private javax.swing.JButton btnCariMinum;
+    private javax.swing.JButton btnCariStan;
+    private javax.swing.JButton btnReset;
+    private javax.swing.JButton btnTampilkanMenu;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;

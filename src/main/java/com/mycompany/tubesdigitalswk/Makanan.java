@@ -9,14 +9,15 @@ package com.mycompany.tubesdigitalswk;
  * @author putra
  */
 public class Makanan {
-    int id, status;
+    int id, idStan, status;
     String nama;
     float harga;
     
-    Makanan(int id, String nama, float harga, int status){
+    Makanan(int id, String nama, float harga,int idStan, int status){
         this.id = id;
         this.nama = nama;
         this.harga = harga;
+        this.idStan = idStan;
         this.status = status;
     }
     
@@ -30,6 +31,10 @@ public class Makanan {
     
     float getHarga(){
         return harga;
+    }
+    
+    int getIdStan(){
+        return idStan;
     }
     
     String getStatus(){
