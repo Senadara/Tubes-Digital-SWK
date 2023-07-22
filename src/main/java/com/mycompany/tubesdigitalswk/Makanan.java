@@ -40,9 +40,9 @@ public class Makanan {
     String getStatus(){
         String stts;
         if(status == 1){
-            stts = "Buka";
+            stts = "Tersedia";
         }else{
-            stts = "Tutup";
+            stts = "Habis";
         }
         return stts;
     }

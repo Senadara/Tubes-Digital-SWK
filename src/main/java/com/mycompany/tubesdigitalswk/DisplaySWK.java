@@ -37,16 +37,16 @@ public class DisplaySWK extends javax.swing.JFrame {
     }
     
     void loadKolomMakan(){
-        modelMakan.addColumn("ID Makanan");
         modelMakan.addColumn("Nama Makanan");
         modelMakan.addColumn("Harga");
+        modelMakan.addColumn("Status");
         TabelMenuMakanan.setModel(modelMakan);
     }
     
      void loadKolomMinum(){
-        modelMinum.addColumn("ID Minuman");
         modelMinum.addColumn("Nama Minuman");
         modelMinum.addColumn("Harga");
+        modelMinum.addColumn("Status");;
         TabelMenuMinuman.setModel(modelMinum);
     }
         
@@ -128,7 +128,7 @@ public class DisplaySWK extends javax.swing.JFrame {
     private void tampilMinuman(){
         modelMinum.setRowCount(0);
         for(Minuman mn: mnm){
-            modelMinum.addRow(new Object [] {mn.getIdStan(), mn.getNama(), mn.getHarga()});
+            modelMinum.addRow(new Object [] {mn.getNama(), mn.getHarga(),mn.getStatus()});
         }
     }
     
@@ -136,7 +136,7 @@ public class DisplaySWK extends javax.swing.JFrame {
     private void tampilMakanan(){
         modelMakan.setRowCount(0);
         for(Makanan m: mkn){
-            modelMakan.addRow(new Object [] {m.getIdStan(), m.getNama(), m.getHarga()});
+            modelMakan.addRow(new Object [] {m.getNama(), m.getHarga(), m.getStatus()});
         }
     }
     
@@ -199,8 +199,131 @@ public class DisplaySWK extends javax.swing.JFrame {
         } catch (SQLException ex) {
             Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
         }
+        }        
     }
-        
+    
+    void cariMinumByKeyword(int metode ,String keyword){
+        if (con != null) {   
+        ArrayList<Minuman> hasilPencarian = new ArrayList<>();
+        String kueri; 
+        if (metode ==  2){
+        kueri = "Select * from minuman where Nama_Minuman like ?";
+        try {
+            PreparedStatement ps = con.prepareStatement(kueri);
+            ps.setString(1, "%" + keyword + "%");
+            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("ID_Minuman");
+                String nama = rs.getString("Nama_Minuman");
+                int harga = rs.getInt("Harga_Minuman");
+                int idStan = rs.getInt("ID_Stan");
+                int status = rs.getInt("status");
+                Minuman minuman = new Minuman(id, nama, harga, idStan, status);
+                hasilPencarian.add(minuman);
+            }
+            rs.close();
+            ps.close();
+
+            // Update daftarBuku dengan hasil pencarian
+            mnm = hasilPencarian;
+            // Tampilkan data hasil pencarian di tabel
+            tampilMinuman();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        }else{
+            kueri = "Select m.ID_Minuman, m.Nama_Minuman, m.Harga_Minuman, m.status, m.ID_Stan, s.Nomor_Stan from minuman m INNER JOIN stan s ON s.ID_Stan = m.ID_Stan WHERE s.Nomor_Stan = " + keyword ;
+        try {
+            PreparedStatement ps = con.prepareStatement(kueri);
+            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("ID_Minuman");
+                String nama = rs.getString("Nama_Minuman");
+                int harga = rs.getInt("Harga_Minuman");
+                int idStan = rs.getInt("ID_Stan");
+                int status = rs.getInt("status");
+                Minuman minuman = new Minuman(id, nama, harga, idStan, status);
+                hasilPencarian.add(minuman);
+            }
+            rs.close();
+            ps.close();
+
+            // Update daftarBuku dengan hasil pencarian
+            mnm = hasilPencarian;
+            // Tampilkan data hasil pencarian di tabel
+            tampilMinuman();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        }           
+    }
+    }
+    
+    void cariMakanByKeyword(int metode ,String keyword){
+        if (con != null) {   
+        if (metode ==  2){
+            System.out.println("anjing");
+        ArrayList<Makanan> hasilPencarian = new ArrayList<>();
+        String kueri = "Select * from makanan where Nama_Makanan like ?";
+        try {
+            PreparedStatement ps = con.prepareStatement(kueri);
+            ps.setString(1, "%" + keyword + "%");
+            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("ID_Makanan");
+                String nama = rs.getString("Nama_Makanan");
+                int harga = rs.getInt("Harga_Makanan");
+                int idStan = rs.getInt("ID_Stan");
+                int status = rs.getInt("status");
+                Makanan makanan = new Makanan(id, nama, harga, idStan, status);
+                hasilPencarian.add(makanan);
+            }
+            rs.close();
+            ps.close();
+
+            // Update daftarBuku dengan hasil pencarian
+            mkn = hasilPencarian;
+            // Tampilkan data hasil pencarian di tabel
+            tampilMakanan();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        }else{
+        ArrayList<Makanan> hasilPencarian = new ArrayList<>();
+        String kueri = "Select m.ID_Makanan, m.Nama_Makanan, m.Harga_Makanan, m.status, m.ID_Stan, s.Nomor_Stan from makanan m INNER JOIN stan s ON s.ID_Stan = m.ID_Stan WHERE s.Nomor_Stan = " + keyword ;
+        try {
+            PreparedStatement ps = con.prepareStatement(kueri);
+            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
+             System.out.println("berhasil tampil makan");
+       
+            while (rs.next()) {
+                int id = rs.getInt("ID_Makanan");
+                String nama = rs.getString("Nama_Makanan");
+                int harga = rs.getInt("Harga_Makanan");
+                int idStan = rs.getInt("ID_Stan");
+                int status = rs.getInt("status");
+                Makanan makanan = new Makanan(id, nama, harga, idStan, status);
+                hasilPencarian.add(makanan);
+            }
+            rs.close();
+            ps.close();
+
+            // Update daftarBuku dengan hasil pencarian
+            mkn = hasilPencarian;
+            // Tampilkan data hasil pencarian di tabel
+            tampilMakanan();
+        }catch (SQLException ex) {
+            Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        }        
+    }
     }
 
     /**
@@ -774,8 +897,23 @@ public class DisplaySWK extends javax.swing.JFrame {
 
     private void btnTampilkanMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTampilkanMenuActionPerformed
         // TODO add your handling code here:
-//        int barisTerpilih = TabelStan.getSelectedRow();
-//        int nomor = modelStan.getValueAt(barisTerpilih, 0);
+        int barisTerpilih = TabelStan.getSelectedRow();
+        String keyword = modelStan.getValueAt(barisTerpilih, 0).toString();
+        if(keyword.length() == 0){
+            loadMenuMakan();
+            tampilMakanan();
+            loadMenuMinum();
+            tampilMinuman();
+        }else{
+            cariMakanByKeyword( 1 ,keyword);
+            cariMinumByKeyword( 1 ,keyword);
+            tampilMakanan();
+            tampilMinuman();
+        }
+        System.out.println(keyword);
+        
+        
+        
         
     }//GEN-LAST:event_btnTampilkanMenuActionPerformed
 
@@ -821,10 +959,29 @@ public class DisplaySWK extends javax.swing.JFrame {
 
     private void btnCariMakanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariMakanActionPerformed
         // TODO add your handling code here:
+        String keyword = TFCariMakan.getText().trim();
+        if(keyword.length() == 0){
+            loadMenuMakan();
+            tampilMakanan();
+        }else{
+            cariMakanByKeyword( 2 ,keyword);
+            tampilMakanan();
+           
+        }         
+    
     }//GEN-LAST:event_btnCariMakanActionPerformed
 
     private void btnCariMinumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariMinumActionPerformed
         // TODO add your handling code here:
+        String keyword = TFCariMinum.getText().trim();
+        if(keyword.length() == 0){
+            loadMenuMinum();
+            tampilMinuman();
+        }else{
+            cariMinumByKeyword( 2 ,keyword);
+            tampilMinuman();
+            System.out.println("dsafdf");
+        }
     }//GEN-LAST:event_btnCariMinumActionPerformed
 
     /**
