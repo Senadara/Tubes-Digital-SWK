@@ -23,6 +23,7 @@ public class Keranjang {
     }
     
     int getIdStan(){
+        System.out.println(idStan);
         return idStan;
     }
     
@@ -38,7 +39,7 @@ public class Keranjang {
         return harga;
     }
     
-    String catatan(){
+    String getCatatan(){
         return catatan;
     }
 }
