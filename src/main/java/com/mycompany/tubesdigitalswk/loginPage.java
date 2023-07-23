@@ -251,12 +251,10 @@ public class loginPage extends javax.swing.JFrame {
         if (!login.equals("Seller"))
             {
                 JOptionPane.showMessageDialog(this, "Masuk Sebagai Customer");   
-            }else if(login.equals("Customer")){
-//        if (login.equals("Customer"))
-//            {
-//            } else {
-            JOptionPane.showMessageDialog(this, "Masuk Sebagai Seller");
-        }
+            }else if(login.equals("Customer"))
+            {
+                JOptionPane.showMessageDialog(this, "Masuk Sebagai Seller");
+            }
          
     }//GEN-LAST:event_btnLanjutActionPerformed
 

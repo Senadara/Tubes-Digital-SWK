@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -362,6 +363,11 @@ public class DisplaySWK extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jTabbedPane3 = new javax.swing.JTabbedPane();
         panelLogin = new javax.swing.JPanel();
+        jLabel16 = new javax.swing.JLabel();
+        jPanel8 = new javax.swing.JPanel();
+        jLabel17 = new javax.swing.JLabel();
+        cbPilihan = new javax.swing.JComboBox<>();
+        btnLanjut = new javax.swing.JButton();
         panelPesanan = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -418,6 +424,14 @@ public class DisplaySWK extends javax.swing.JFrame {
         btnCariMakan = new javax.swing.JButton();
         btnCariMinum = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
+        jPanel6 = new javax.swing.JPanel();
+        jPanel7 = new javax.swing.JPanel();
+        jLabel18 = new javax.swing.JLabel();
+        btnLogin = new javax.swing.JButton();
+        btnAdmin = new javax.swing.JButton();
+        jtEmail = new javax.swing.JTextField();
+        jtPassword = new javax.swing.JTextField();
+        jLabel19 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -441,15 +455,80 @@ public class DisplaySWK extends javax.swing.JFrame {
 
         panelLogin.setBackground(new java.awt.Color(10, 38, 71));
 
+        jLabel16.setFont(new java.awt.Font("Trebuchet MS", 1, 48)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(255, 153, 0));
+        jLabel16.setText("DIGITAL SWK");
+
+        jPanel8.setBackground(new java.awt.Color(0, 51, 153));
+        jPanel8.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+
+        jLabel17.setFont(new java.awt.Font("Trebuchet MS", 0, 18)); // NOI18N
+        jLabel17.setText("Login Sebagai:");
+
+        cbPilihan.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        cbPilihan.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seller", "Customer" }));
+        cbPilihan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbPilihanActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
+        jPanel8.setLayout(jPanel8Layout);
+        jPanel8Layout.setHorizontalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(jLabel17)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(cbPilihan, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(177, Short.MAX_VALUE))
+        );
+        jPanel8Layout.setVerticalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addGap(99, 99, 99)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel17)
+                    .addComponent(cbPilihan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(101, Short.MAX_VALUE))
+        );
+
+        btnLanjut.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        btnLanjut.setText("Lanjutkan");
+        btnLanjut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLanjutActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelLoginLayout = new javax.swing.GroupLayout(panelLogin);
         panelLogin.setLayout(panelLoginLayout);
         panelLoginLayout.setHorizontalGroup(
             panelLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1310, Short.MAX_VALUE)
+            .addGroup(panelLoginLayout.createSequentialGroup()
+                .addContainerGap(440, Short.MAX_VALUE)
+                .addGroup(panelLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLoginLayout.createSequentialGroup()
+                        .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(340, 340, 340))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLoginLayout.createSequentialGroup()
+                        .addComponent(btnLanjut)
+                        .addGap(550, 550, 550))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLoginLayout.createSequentialGroup()
+                        .addComponent(jLabel16)
+                        .addGap(465, 465, 465))))
         );
         panelLoginLayout.setVerticalGroup(
             panelLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 999, Short.MAX_VALUE)
+            .addGroup(panelLoginLayout.createSequentialGroup()
+                .addGap(151, 151, 151)
+                .addComponent(jLabel16)
+                .addGap(29, 29, 29)
+                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnLanjut)
+                .addContainerGap(469, Short.MAX_VALUE))
         );
 
         jTabbedPane3.addTab("tab2", panelLogin);
@@ -662,11 +741,13 @@ public class DisplaySWK extends javax.swing.JFrame {
                                 .addComponent(jLabel14)
                                 .addGap(120, 120, 120)
                                 .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jButton6)
                 .addGap(47, 47, 47))
+
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel2Layout.createSequentialGroup()
                     .addGap(36, 36, 36)
@@ -997,6 +1078,105 @@ public class DisplaySWK extends javax.swing.JFrame {
 
         jTabbedPane3.addTab("tab3", jPanel5);
 
+        jPanel7.setBackground(new java.awt.Color(10, 38, 71));
+
+        jLabel18.setFont(new java.awt.Font("Trebuchet MS", 1, 36)); // NOI18N
+        jLabel18.setForeground(new java.awt.Color(255, 153, 0));
+        jLabel18.setText("DIGITAL SWK");
+
+        btnLogin.setFont(new java.awt.Font("Trebuchet MS", 0, 14)); // NOI18N
+        btnLogin.setText("LOGIN");
+        btnLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLoginActionPerformed(evt);
+            }
+        });
+
+        btnAdmin.setBackground(new java.awt.Color(51, 204, 0));
+        btnAdmin.setFont(new java.awt.Font("Trebuchet MS", 0, 14)); // NOI18N
+        btnAdmin.setText("Hubungi Admin");
+        btnAdmin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAdminActionPerformed(evt);
+            }
+        });
+
+        jtEmail.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jtEmailActionPerformed(evt);
+            }
+        });
+
+        jtPassword.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jtPasswordActionPerformed(evt);
+            }
+        });
+
+        jLabel19.setFont(new java.awt.Font("Trebuchet MS", 0, 14)); // NOI18N
+        jLabel19.setText("Atau");
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                .addGap(0, 539, Short.MAX_VALUE)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(461, 461, 461))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                        .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(547, 547, 547))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                        .addComponent(jLabel19)
+                        .addGap(593, 593, 593))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                        .addComponent(jLabel18)
+                        .addGap(512, 512, 512))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                        .addComponent(btnAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(529, 529, 529))))
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGap(129, 129, 129)
+                .addComponent(jLabel18)
+                .addGap(39, 39, 39)
+                .addComponent(jtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+                .addComponent(btnLogin)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel19)
+                .addGap(18, 18, 18)
+                .addComponent(btnAdmin, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(528, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jTabbedPane3.addTab("tab4", jPanel6);
+
         jPanel4.add(jTabbedPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1310, 1030));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -1169,11 +1349,15 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JTable TabelMenuMakanan;
     private javax.swing.JTable TabelMenuMinuman;
     private javax.swing.JTable TabelStan;
+    private javax.swing.JButton btnAdmin;
     private javax.swing.JButton btnCariMakan;
     private javax.swing.JButton btnCariMinum;
     private javax.swing.JButton btnCariStan;
+    private javax.swing.JButton btnLanjut;
+    private javax.swing.JButton btnLogin;
     private javax.swing.JButton btnReset;
     private javax.swing.JButton btnTampilkanMenu;
+    private javax.swing.JComboBox<String> cbPilihan;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;
@@ -1183,6 +1367,10 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1196,6 +1384,9 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -1212,6 +1403,8 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField7;
     private javax.swing.JTextField jTextField8;
     private javax.swing.JToggleButton jToggleButton1;
+    private javax.swing.JTextField jtEmail;
+    private javax.swing.JTextField jtPassword;
     private javax.swing.JPanel panelLogin;
     private javax.swing.JPanel panelPesanan;
     // End of variables declaration//GEN-END:variables
