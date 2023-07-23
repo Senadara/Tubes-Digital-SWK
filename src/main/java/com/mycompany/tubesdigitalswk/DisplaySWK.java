@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -364,6 +365,10 @@ public class DisplaySWK extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jTabbedPane3 = new javax.swing.JTabbedPane();
         panelLogin = new javax.swing.JPanel();
+        jLabel16 = new javax.swing.JLabel();
+        cbPilihan = new javax.swing.JComboBox<>();
+        jLabel17 = new javax.swing.JLabel();
+        btnLanjut = new javax.swing.JButton();
         panelPesanan = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -443,15 +448,60 @@ public class DisplaySWK extends javax.swing.JFrame {
 
         panelLogin.setBackground(new java.awt.Color(10, 38, 71));
 
+        jLabel16.setFont(new java.awt.Font("Trebuchet MS", 1, 48)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(255, 153, 0));
+        jLabel16.setText("DIGITAL SWK");
+
+        cbPilihan.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        cbPilihan.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seller", "Customer" }));
+        cbPilihan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbPilihanActionPerformed(evt);
+            }
+        });
+
+        jLabel17.setFont(new java.awt.Font("Trebuchet MS", 0, 18)); // NOI18N
+        jLabel17.setText("Login Sebagai:");
+
+        btnLanjut.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnLanjut.setText("Lanjutkan");
+        btnLanjut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLanjutActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelLoginLayout = new javax.swing.GroupLayout(panelLogin);
         panelLogin.setLayout(panelLoginLayout);
         panelLoginLayout.setHorizontalGroup(
             panelLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1310, Short.MAX_VALUE)
+            .addGroup(panelLoginLayout.createSequentialGroup()
+                .addContainerGap(490, Short.MAX_VALUE)
+                .addComponent(jLabel16)
+                .addGap(532, 532, 532))
+            .addGroup(panelLoginLayout.createSequentialGroup()
+                .addGap(437, 437, 437)
+                .addComponent(jLabel17)
+                .addGap(18, 18, 18)
+                .addGroup(panelLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cbPilihan, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(panelLoginLayout.createSequentialGroup()
+                        .addGap(8, 8, 8)
+                        .addComponent(btnLanjut)))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         panelLoginLayout.setVerticalGroup(
             panelLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 999, Short.MAX_VALUE)
+            .addGroup(panelLoginLayout.createSequentialGroup()
+                .addGap(121, 121, 121)
+                .addComponent(jLabel16)
+                .addGap(70, 70, 70)
+                .addGroup(panelLoginLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel17)
+                    .addComponent(cbPilihan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(42, 42, 42)
+                .addComponent(btnLanjut)
+                .addContainerGap(643, Short.MAX_VALUE))
         );
 
         jTabbedPane3.addTab("tab2", panelLogin);
@@ -1150,6 +1200,24 @@ public class DisplaySWK extends javax.swing.JFrame {
         TFJumlahBeliMinuman.setText("");
     }//GEN-LAST:event_ButtonKeranjangMinumanActionPerformed
 
+    private void cbPilihanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPilihanActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbPilihanActionPerformed
+
+    private void btnLanjutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLanjutActionPerformed
+        // TODO add your handling code here:
+        String login = cbPilihan.getSelectedItem().toString();
+
+        if (!login.equals("Seller"))
+        {
+            JOptionPane.showMessageDialog(this, "Masuk Sebagai Customer");
+        }else if(login.equals("Customer"))
+        {
+            JOptionPane.showMessageDialog(this, "Masuk Sebagai Seller");
+        }
+
+    }//GEN-LAST:event_btnLanjutActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1174,8 +1242,10 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JButton btnCariMakan;
     private javax.swing.JButton btnCariMinum;
     private javax.swing.JButton btnCariStan;
+    private javax.swing.JButton btnLanjut;
     private javax.swing.JButton btnReset;
     private javax.swing.JButton btnTampilkanMenu;
+    private javax.swing.JComboBox<String> cbPilihan;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;
@@ -1185,6 +1255,8 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
