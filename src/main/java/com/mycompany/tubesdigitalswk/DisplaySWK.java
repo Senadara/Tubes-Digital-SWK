@@ -141,10 +141,12 @@ public class DisplaySWK extends javax.swing.JFrame {
      
     private void tampilKeranjang(){
         modelKeranjang.setRowCount(0);
+        float harga = 0;
         for(Keranjang k: krnjg){
             modelKeranjang.addRow(new Object [] {k.getIdStan(), k.getNamaMakanan(), k.getHarga(), k.getJumlahBeli(), k.getCatatan()});
-            tHarga += k.getHarga()*k.getJumlahBeli();
+            harga += k.getHarga()*k.getJumlahBeli();
         }
+        tHarga =+ harga;
         TFTotalHarga.setText(Float.toString(tHarga));
     }
      
