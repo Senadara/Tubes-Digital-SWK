@@ -1576,19 +1576,11 @@ public class DisplaySWK extends javax.swing.JFrame {
 
     private void btnEditMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditMakananActionPerformed
         // TODO add your handling code here:
-       try{
-                PreparedStatement ps = con.prepareStatement("Select * from menu WHERE ID_Stan");
-                ResultSet rs = ps.executeQuery();
-                if(rs.next() == true){
-                    tfNamaMakanan.setText(rs.getString(1));
-                    tfHargaMakanan.setText(rs.getString(2));
-                }else{
-                    JOptionPane.showMessageDialog(this, "Data Tidak Di Temukan");
-                }
-                   
-            } catch (SQLException ex) {
-                Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
-            }
+         int barisTerpilih = TabelEditMakanan.getSelectedRow();
+        String namaMakanan = TabelEditMakanan.getValueAt(barisTerpilih, 2).toString();
+        tfNamaMakanan.setText(namaMakanan);
+        String hargaMakanan = TabelEditMakanan.getValueAt(barisTerpilih, 3).toString();
+        tfHargaMakanan.setText(hargaMakanan);
     }//GEN-LAST:event_btnEditMakananActionPerformed
 
     private void cbStatusMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbStatusMakananActionPerformed
