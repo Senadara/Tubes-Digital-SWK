@@ -4,19 +4,79 @@
  */
 package com.mycompany.tubesdigitalswk;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author DEO
  */
 public class PilihanMakan extends javax.swing.JFrame {
+    
+    private Connection con;
+    private DefaultTableModel modelMeja = new DefaultTableModel();
+    private ArrayList<Booking> bm = new ArrayList<>();
+    
+    
+    
+    void loadKolomBookingMeja(){
+        modelMeja.addColumn("No. Meja");
+        modelMeja.addColumn("Jumlah Kursi");
+        modelMeja.addColumn("Status");
+        jtBooking.setModel(modelMeja);
+    }
+    
+    private void loadBookingMeja(){
+        if(con != null){
+            bm = new ArrayList<>();
+            String kueri = "Select * from meja;";
+            try{
+                PreparedStatement ps = con.prepareStatement(kueri);
+                ResultSet rs = ps.executeQuery();
+                while(rs.next()){
+                    int id = rs.getInt("ID_Meja");
+                    int nomorMeja = rs.getInt("Nomor_Meja");
+                    int jumlahKursi = rs.getInt("Jumlah_Kursi");
+                    int status = rs.getInt("Status");
+                    
+                    Booking booking = new Booking(id, nomorMeja, jumlahKursi, status);
+                    bm.add(booking);
+                }
+                rs.close();
+                ps.close();
+            }catch(SQLException ex){
+                Logger.getLogger(PilihanMakan.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    private void tampilBooking(){
+        modelMeja.setRowCount(0);
+        for(Booking b: bm){
+            modelMeja.addRow(new Object [] {b.getID(), b.getNomorMeja(), b.getJumlahKursi(), b.getStatus()});
+        }
+    }
 
     /**
      * Creates new form PilihanMakan
      */
     public PilihanMakan() {
         initComponents();
+        loadKolomBookingMeja();
+        con = Koneksi.bukaKoneksi();
+        reset();
+    }
+    
+    private void reset() {
+        loadBookingMeja();
+        tampilBooking();
     }
 
     /**
@@ -126,7 +186,7 @@ public class PilihanMakan extends javax.swing.JFrame {
 
         if (booking.equals("On Site"))
         {
-            JOptionPane.showMessageDialog(this, "");
+            JOptionPane.showMessageDialog(this, "Silahkan Booking Terlebih Dahulu");
             
         }else if(booking.equals("Take Away"))
         {
