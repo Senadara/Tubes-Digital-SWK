@@ -47,4 +47,8 @@ public class Makanan {
         return stts;
     }
     
+    int getKetersediaan(){
+        return status;
+    }
+    
 }

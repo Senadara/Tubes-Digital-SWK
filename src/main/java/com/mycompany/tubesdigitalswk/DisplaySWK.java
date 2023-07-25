@@ -22,47 +22,52 @@ import javax.swing.table.DefaultTableModel;
  * @author putra
  */
 public class DisplaySWK extends javax.swing.JFrame {
-    
+
     private Connection con;
     private DefaultTableModel modelStan = new DefaultTableModel();
     private DefaultTableModel modelMakan = new DefaultTableModel();
     private DefaultTableModel modelMinum = new DefaultTableModel();
     private DefaultTableModel modelKeranjang = new DefaultTableModel();
     private DefaultTableModel modelMeja = new DefaultTableModel();
+    
+    
     private ArrayList<Stan> stn = new ArrayList<>();
-    private ArrayList<Makanan> mkn = new ArrayList<>(); 
+    private ArrayList<Makanan> mkn = new ArrayList<>();
     private ArrayList<Minuman> mnm = new ArrayList<>();
     private ArrayList<Keranjang> krnjg = new ArrayList<>();
     
+
     private float tHarga = 0;
-    
-    private void loadKolomStan(){
+
+    private void loadKolomStan() {
         modelStan.addColumn("Nomor Stan");
         modelStan.addColumn("ID Stan");
         modelStan.addColumn("Nama Stan");
         modelStan.addColumn("Status");
         TabelStan.setModel(modelStan);
     }
-    
-    private void loadKolomMakan(){
+
+    private void loadKolomMakan() {
         modelMakan.addColumn("ID Stan");
         modelMakan.addColumn("ID Makanan");
         modelMakan.addColumn("Nama Makanan");
         modelMakan.addColumn("Harga");
         modelMakan.addColumn("Status");
         TabelMenuMakanan.setModel(modelMakan);
+        TabelEditMakanan.setModel(modelMakan);
     }
-    
-    private void loadKolomMinum(){
+
+    private void loadKolomMinum() {
         modelMinum.addColumn("ID Stan");
         modelMinum.addColumn("ID Minuman");
         modelMinum.addColumn("Nama Minuman");
         modelMinum.addColumn("Harga");
         modelMinum.addColumn("Status");;
         TabelMenuMinuman.setModel(modelMinum);
+        TabelEditMinuman.setModel(modelMinum);
     }
-     
-    private void loadKolomKeranjang(){
+
+    private void loadKolomKeranjang() {
         modelKeranjang.addColumn("No Stan");
         modelKeranjang.addColumn("Makanan/Minuman");
         modelKeranjang.addColumn("Harga");
@@ -70,120 +75,154 @@ public class DisplaySWK extends javax.swing.JFrame {
         modelKeranjang.addColumn("Catatan");
         TabelKeranjang.setModel(modelKeranjang);
     }
-        
-    
-    private void loadStan(){
-        if(con != null){
+
+    private void loadStan() {
+        if (con != null) {
             stn = new ArrayList<>();
             String kueri = "Select * from stan;";
-            try{
+            try {
                 PreparedStatement ps = con.prepareStatement(kueri);
                 ResultSet rs = ps.executeQuery();
-                while(rs.next()){
+                while (rs.next()) {
                     int id = rs.getInt("ID_Stan");
                     int nomor = rs.getInt("Nomor_Stan");
                     String nama = rs.getString("Nama_Stan");
                     int status = rs.getInt("status");
-                    
+
                     Stan stan = new Stan(id, nomor, nama, status);
                     stn.add(stan);
                 }
                 rs.close();
                 ps.close();
-            }catch(SQLException ex){
+            } catch (SQLException ex) {
                 Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
     
-    private void loadMenuMakan(){
-        if(con != null){
-            mkn = new ArrayList<>();
-            String kueri = "Select * from menu WHERE Type = 1;";
-            try{
+    //Method ambil menu ke database untuk seller
+    private void loadMenuMakan(int metode) {
+        if (con != null) {
+            int idStn = 2001;
+            ArrayList<Makanan> mknn = new ArrayList<>();
+            ArrayList<Minuman> mnmn = new ArrayList<>();
+            if (metode == 1){
+            String kueri = "Select * from menu WHERE ID_Stan = " + idStn;
+            try {
                 PreparedStatement ps = con.prepareStatement(kueri);
                 ResultSet rs = ps.executeQuery();
-                while(rs.next()){
+                while (rs.next()) {
                     int id = rs.getInt("ID_Menu");
                     String nama = rs.getString("Nama");
                     float harga = rs.getFloat("Harga");
                     int status = rs.getInt("status");
                     int idStan = rs.getInt("ID_Stan");
-                    
+                    int type = rs.getInt("Type");
+                    if (type == 1){
+                    Makanan makanan = new Makanan(id, nama, harga, idStan, status);
+                    mknn.add(makanan);
+                    }else{
+                    Minuman minuman = new Minuman(id, nama, harga, idStan, status);
+                    mnmn.add(minuman);   
+                    }
+                }
+                mkn = mknn;
+                mnm = mnmn;
+                rs.close();
+                ps.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        }
+    }
+
+    private void loadMenuMakan() {
+        if (con != null) {
+            mkn = new ArrayList<>();
+            String kueri = "Select * from menu WHERE Type = 1;";
+            try {
+                PreparedStatement ps = con.prepareStatement(kueri);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    int id = rs.getInt("ID_Menu");
+                    String nama = rs.getString("Nama");
+                    float harga = rs.getFloat("Harga");
+                    int status = rs.getInt("status");
+                    int idStan = rs.getInt("ID_Stan");
+
                     Makanan makanan = new Makanan(id, nama, harga, idStan, status);
                     mkn.add(makanan);
                 }
                 rs.close();
                 ps.close();
-            }catch(SQLException ex){
+            } catch (SQLException ex) {
                 Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
-    
-     private void loadMenuMinum(){
-        if(con != null){
+
+    private void loadMenuMinum() {
+        if (con != null) {
             mnm = new ArrayList<>();
             String kueri = "Select * from menu WHERE Type = 2;";
-            try{
+            try {
                 PreparedStatement ps = con.prepareStatement(kueri);
                 ResultSet rs = ps.executeQuery();
-                while(rs.next()){
+                while (rs.next()) {
                     int id = rs.getInt("ID_Menu");
                     String nama = rs.getString("Nama");
                     float harga = rs.getFloat("Harga");
                     int status = rs.getInt("status");
                     int idStan = rs.getInt("ID_Stan");
-                    
+
                     Minuman minuman = new Minuman(id, nama, harga, idStan, status);
                     mnm.add(minuman);
                 }
                 rs.close();
                 ps.close();
-            }catch(SQLException ex){
+            } catch (SQLException ex) {
                 Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
-     
-    private void tampilKeranjang(){
+
+    private void tampilKeranjang() {
         modelKeranjang.setRowCount(0);
         float harga = 0;
-        for(Keranjang k: krnjg){
-            modelKeranjang.addRow(new Object [] {k.getIdStan(), k.getNamaMakanan(), k.getHarga(), k.getJumlahBeli(), k.getCatatan()});
-            harga += k.getHarga()*k.getJumlahBeli();
+        for (Keranjang k : krnjg) {
+            modelKeranjang.addRow(new Object[]{k.getIdStan(), k.getNamaMakanan(), k.getHarga(), k.getJumlahBeli(), k.getCatatan()});
+            harga += k.getHarga() * k.getJumlahBeli();
         }
-        tHarga =+ harga;
+        tHarga = +harga;
         TFTotalHarga.setText(Float.toString(tHarga));
     }
-     
-    private void tampilMinuman(){
+
+    private void tampilMinuman() {
         modelMinum.setRowCount(0);
-        for(Minuman mn: mnm){
-            modelMinum.addRow(new Object [] {mn.getIdStan(),mn.getID(), mn.getNama(), mn.getHarga(),mn.getStatus()});
-        }
+        for (Minuman mn : mnm) {
+            modelMinum.addRow(new Object[]{mn.getIdStan(), mn.getID(), mn.getNama(), mn.getHarga(), mn.getStatus()});
+        }       
     }
-    
-    
-    private void tampilMakanan(){
+
+    private void tampilMakanan() {
         modelMakan.setRowCount(0);
-        for(Makanan m: mkn){
-            modelMakan.addRow(new Object [] {m.getIdStan(), m.getID(), m.getNama(), m.getHarga(), m.getStatus()});
+        for (Makanan m : mkn) {
+            modelMakan.addRow(new Object[]{m.getIdStan(), m.getID(), m.getNama(), m.getHarga(), m.getStatus()});
         }
     }
-    
-    private void tampilStan(){
+
+    private void tampilStan() {
         modelStan.setRowCount(0);
-        for(Stan s: stn){
-            modelStan.addRow(new Object [] {s.getID(), s.getNomor(),s.getNama(),s.getStatus()});
+        for (Stan s : stn) {
+            modelStan.addRow(new Object[]{s.getID(), s.getNomor(), s.getNama(), s.getStatus()});
         }
     }
-    
 
     /**
      * Creates new form DisplaySWK
      */
-   public DisplaySWK(){
+    public DisplaySWK() {
         initComponents();
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         loadKolomStan();
@@ -193,8 +232,8 @@ public class DisplaySWK extends javax.swing.JFrame {
         con = Koneksi.bukaKoneksi();
         reset();
     }
-    
-    private void reset(){    
+
+    private void reset() {
         loadStan();
         tampilStan();
         loadMenuMakan();
@@ -202,121 +241,121 @@ public class DisplaySWK extends javax.swing.JFrame {
         loadMenuMinum();
         tampilMinuman();
     }
-    
-    private void cariStanByKeyword(String keyword){
+
+    private void cariStanByKeyword(String keyword) {
         if (con != null) {
-        ArrayList<Stan> hasilPencarian = new ArrayList<>();
-        String kueri = "Select * from stan where Nomor_Stan like ? or Nama_Stan like ?";
-        try {
-            PreparedStatement ps = con.prepareStatement(kueri);
-            ps.setString(1, "%" + keyword + "%");
-            ps.setString(2, "%" + keyword + "%");
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("ID_Stan");
-                String nama = rs.getString("Nama_Stan");
-                int nomor = rs.getInt("Nomor_Stan");
-                int status = rs.getInt("status");
-                Stan stan = new Stan(id, nomor, nama, status);
-                hasilPencarian.add(stan);
+            ArrayList<Stan> hasilPencarian = new ArrayList<>();
+            String kueri = "Select * from stan where Nomor_Stan like ? or Nama_Stan like ?";
+            try {
+                PreparedStatement ps = con.prepareStatement(kueri);
+                ps.setString(1, "%" + keyword + "%");
+                ps.setString(2, "%" + keyword + "%");
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    int id = rs.getInt("ID_Stan");
+                    String nama = rs.getString("Nama_Stan");
+                    int nomor = rs.getInt("Nomor_Stan");
+                    int status = rs.getInt("status");
+                    Stan stan = new Stan(id, nomor, nama, status);
+                    hasilPencarian.add(stan);
+                }
+                rs.close();
+                ps.close();
+
+                // Update daftarBuku dengan hasil pencarian
+                stn = hasilPencarian;
+                // Tampilkan data hasil pencarian di tabel
+                tampilStan();
+
+            } catch (SQLException ex) {
+                Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
             }
-            rs.close();
-            ps.close();
-
-            // Update daftarBuku dengan hasil pencarian
-            stn = hasilPencarian;
-            // Tampilkan data hasil pencarian di tabel
-            tampilStan();
-
-        } catch (SQLException ex) {
-            Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
         }
-        }        
     }
-    
-    private void cariMenuByKeyword(int btn,int metode ,String keyword){
+
+    private void cariMenuByKeyword(int btn, int metode, String keyword) {
         ArrayList<Minuman> Minum = new ArrayList<>();
         ArrayList<Makanan> Makan = new ArrayList<>();
-        if (con != null) {   
-        if (metode ==  2){
-        String kueri = "Select * from menu where Nama like ?";
-        try {
-            PreparedStatement ps = con.prepareStatement(kueri);
-            ps.setString(1, "%" + keyword + "%");
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("ID_Menu");
-                String nama = rs.getString("Nama");
-                int harga = rs.getInt("Harga");
-                int idStan = rs.getInt("ID_Stan");
-                int status = rs.getInt("status");
-                int type = rs.getInt("Type");
-                if (type == 2){
-                Minuman minuman = new Minuman(id, nama, harga, idStan, status);
-                Minum.add(minuman);
-                    System.out.println("1");
-                }else if (type == 1){
-                Makanan makanan = new Makanan(id, nama, harga, idStan, status);
-                Makan.add(makanan);      
-                    System.out.println("2");
+        if (con != null) {
+            if (metode == 2) {
+                String kueri = "Select * from menu where Nama like ?";
+                try {
+                    PreparedStatement ps = con.prepareStatement(kueri);
+                    ps.setString(1, "%" + keyword + "%");
+                    ResultSet rs = ps.executeQuery();
+                    while (rs.next()) {
+                        int id = rs.getInt("ID_Menu");
+                        String nama = rs.getString("Nama");
+                        int harga = rs.getInt("Harga");
+                        int idStan = rs.getInt("ID_Stan");
+                        int status = rs.getInt("status");
+                        int type = rs.getInt("Type");
+                        if (type == 2) {
+                            Minuman minuman = new Minuman(id, nama, harga, idStan, status);
+                            Minum.add(minuman);
+                            System.out.println("1");
+                        } else if (type == 1) {
+                            Makanan makanan = new Makanan(id, nama, harga, idStan, status);
+                            Makan.add(makanan);
+                            System.out.println("2");
+                        }
+                    }
+                    rs.close();
+                    ps.close();
+                    mnm = Minum;
+                    mkn = Makan;
+                    switch (btn) {
+                        case 1 ->
+                            tampilMakanan();
+                        case 2 ->
+                            tampilMinuman();
+                    }
+
+                } catch (SQLException ex) {
+                    Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            } else if (metode == 1) {
+                String kueri = "Select m.ID_Menu, m.Nama, m.Harga, m.status, m.ID_Stan, m.Type, s.Nomor_Stan from menu m INNER JOIN stan s ON s.ID_Stan = m.ID_Stan WHERE s.Nomor_Stan = " + keyword;
+                try {
+                    PreparedStatement ps = con.prepareStatement(kueri);
+                    ResultSet rs = ps.executeQuery();
+                    while (rs.next()) {
+                        int id = rs.getInt("ID_Menu");
+                        String nama = rs.getString("Nama");
+                        int harga = rs.getInt("Harga");
+                        int idStan = rs.getInt("ID_Stan");
+                        int status = rs.getInt("status");
+                        int type = rs.getInt("Type");
+                        Minuman minuman;
+                        Makanan makanan;
+                        if (type == 2) {
+                            minuman = new Minuman(id, nama, harga, idStan, status);
+                            Minum.add(minuman);
+                        } else if (type == 1) {
+                            makanan = new Makanan(id, nama, harga, idStan, status);
+                            Makan.add(makanan);
+                        }
+                    }
+                    rs.close();
+                    ps.close();
+                    mnm = Minum;
+                    mkn = Makan;
+                    tampilMinuman();
+                    tampilMakanan();
+
+                } catch (SQLException ex) {
+                    Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            rs.close();
-            ps.close();
-            mnm = Minum;     
-            mkn = Makan;
-            switch(btn){
-                case 1 -> tampilMakanan();
-                case 2 -> tampilMinuman();  
-            }
-
-
-        } catch (SQLException ex) {
-            Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        
-        }else if(metode == 1){
-            String kueri = "Select m.ID_Menu, m.Nama, m.Harga, m.status, m.ID_Stan, m.Type, s.Nomor_Stan from menu m INNER JOIN stan s ON s.ID_Stan = m.ID_Stan WHERE s.Nomor_Stan = " + keyword;      
-        try {
-            PreparedStatement ps = con.prepareStatement(kueri);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("ID_Menu");
-                String nama = rs.getString("Nama");
-                int harga = rs.getInt("Harga");
-                int idStan = rs.getInt("ID_Stan");
-                int status = rs.getInt("status");
-                int type = rs.getInt("Type");
-                Minuman minuman;
-                Makanan makanan;
-                if(type == 2){
-                minuman = new Minuman(id, nama, harga, idStan, status);
-                Minum.add(minuman);
-                }else if(type == 1){
-                makanan = new Makanan(id, nama, harga, idStan, status);
-                Makan.add(makanan);    
-                }
-            }
-            rs.close();
-            ps.close();
-            mnm = Minum;     
-            mkn = Makan;
-            tampilMinuman();
-            tampilMakanan();
+    }
 
-        } catch (SQLException ex) {
-            Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        }           
-    }
-    }
-    
-    private int getIdTransaksi(){   
+    private int getIdTransaksi() {
         int nomorUrutTerakhir = 0;
         int tahunSaatIni = LocalDate.now().getYear();
         String kueri = "SELECT MAX(ID_Pesanan) FROM pesanan WHERE YEAR(tanggal_transaksi) = ?";
-        try{
+        try {
             PreparedStatement ps = con.prepareStatement(kueri);
             ps.setInt(1, tahunSaatIni);
             ResultSet rs = ps.executeQuery();
@@ -338,21 +377,21 @@ public class DisplaySWK extends javax.swing.JFrame {
         return idTransaksi;
     }
 
-    public void uploadTransaksi(){
+    public void uploadTransaksi() {
         String kueri = "INSERT INTO pesanan (ID_Pesanan, ID_Menu, Jumlah, ID_Meja, ID_Customer, Total_Belanja, Tanggal_Transaksi) VALUES (?, ?, ?, ?, ?, ?, ?)";
         LocalDate tanggalSaatIni = LocalDate.now();
         String tanggalString = tanggalSaatIni.toString();
         java.sql.Date sqlDate = java.sql.Date.valueOf(tanggalString);
         int id = Integer.parseInt(buatIDTransaksi());
         int idCustomer = 2001;
-        try{
+        try {
             PreparedStatement ps = con.prepareStatement(kueri);
             for (Keranjang k : krnjg) {
                 ps.setInt(1, id);
                 ps.setInt(2, k.getIdMakan());
                 ps.setInt(3, k.getJumlahBeli());
                 ps.setInt(4, Integer.parseInt(TFNomorMeja.getText()));
-                ps.setInt(5, idCustomer );
+                ps.setInt(5, idCustomer);
                 ps.setFloat(6, Float.parseFloat(TFTotalHarga.getText()));
                 ps.setDate(7, sqlDate);
 
@@ -364,10 +403,43 @@ public class DisplaySWK extends javax.swing.JFrame {
         } catch (SQLException e) {
             System.err.println("Error saat mengupload data ke database: " + e.getMessage());
         }
-}
-   
-    
-    
+    }
+
+    private void editMenu(int idMakan, int type) {
+        if (con != null) {
+            int idStan = 2001; //nanti dirubah
+            String namaMakanan = tfNamaMakanan.getText();
+            float hargaMakanan = Float.parseFloat(tfHargaMakanan.getText());
+            int statusMakanan = Integer.parseInt(cbStatusMakanan.getSelectedItem().toString());
+            String kueri = "INSERT INTO menu (ID_Menu, Type, Nama, Harga, Status, ID_Stan) VALUES (?, ?, ?, ?, ?, ?)";
+            try {
+                PreparedStatement ps = con.prepareStatement(kueri);
+                ps.setInt(1, idMakan);
+                ps.setInt(2, type);
+                ps.setString(3, namaMakanan);
+                ps.setFloat(4, hargaMakanan);
+                ps.setInt(5, statusMakanan);
+                ps.setInt(6, idStan);
+
+                //ps.setInt(5, idStan);
+                int rowsAffected = ps.executeUpdate();
+
+                if (rowsAffected == 1) {
+                    JOptionPane.showMessageDialog(this, "Insert Data Successfully");
+                    tfNamaMakanan.setText("");
+                    tfHargaMakanan.setText("");
+                    cbStatusMakanan.setSelectedIndex(0);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Insert Data Failed");
+                }
+
+                ps.close();
+                con.close(); // Close the connection after use.
+            } catch (SQLException ex) {
+                Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -435,21 +507,16 @@ public class DisplaySWK extends javax.swing.JFrame {
         btnCariMakan = new javax.swing.JButton();
         btnCariMinum = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
-        jLabel26 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jPanel11 = new javax.swing.JPanel();
         jLabel28 = new javax.swing.JLabel();
         jPanel9 = new javax.swing.JPanel();
         tfNamaMakanan = new javax.swing.JTextField();
         jLabel29 = new javax.swing.JLabel();
-        jLabel30 = new javax.swing.JLabel();
-        tfIdMakanan = new javax.swing.JTextField();
         tfHargaMakanan = new javax.swing.JTextField();
         jLabel31 = new javax.swing.JLabel();
         jLabel32 = new javax.swing.JLabel();
         cbStatusMakanan = new javax.swing.JComboBox<>();
-        jLabel21 = new javax.swing.JLabel();
-        tfIdStan = new javax.swing.JTextField();
         jLabel36 = new javax.swing.JLabel();
         jScrollPane11 = new javax.swing.JScrollPane();
         TabelEditMakanan = new javax.swing.JTable();
@@ -459,33 +526,18 @@ public class DisplaySWK extends javax.swing.JFrame {
         btnEditMakanan = new javax.swing.JButton();
         btnHapusMakanan = new javax.swing.JButton();
         btnUbahMakanan = new javax.swing.JButton();
-        jPanel6 = new javax.swing.JPanel();
-        jLabel18 = new javax.swing.JLabel();
-        jLabel23 = new javax.swing.JLabel();
-        jLabel24 = new javax.swing.JLabel();
-        jLabel25 = new javax.swing.JLabel();
-        jLabel27 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        jTextField4 = new javax.swing.JTextField();
-        cbStatusMinuman = new javax.swing.JComboBox<>();
-        jLabel12 = new javax.swing.JLabel();
         jLabel22 = new javax.swing.JLabel();
         toggleButtonStatus = new javax.swing.JToggleButton();
-        btnHapusMinuman = new javax.swing.JButton();
         jScrollPane12 = new javax.swing.JScrollPane();
-        TabelEditMakanan1 = new javax.swing.JTable();
+        TabelEditMinuman = new javax.swing.JTable();
         jLabel34 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        btnUbahMakanan1 = new javax.swing.JButton();
+        btnEditMinuman = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane10 = new javax.swing.JScrollPane();
         tbPesanan = new javax.swing.JTable();
         jLabel35 = new javax.swing.JLabel();
         tfCari = new javax.swing.JTextField();
         btnCari = new javax.swing.JButton();
-        btnUbahMinuman = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -996,9 +1048,6 @@ public class DisplaySWK extends javax.swing.JFrame {
 
         jTabbedPane3.addTab("tab4", jScrollPane6);
 
-        jLabel26.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel26.setText("Edit Menu");
-
         jPanel1.setBackground(new java.awt.Color(10, 38, 71));
         jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
@@ -1018,16 +1067,7 @@ public class DisplaySWK extends javax.swing.JFrame {
         });
 
         jLabel29.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        jLabel29.setText("Nama Makanan:");
-
-        jLabel30.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        jLabel30.setText("ID Makanan:");
-
-        tfIdMakanan.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tfIdMakananActionPerformed(evt);
-            }
-        });
+        jLabel29.setText("Nama Menu:");
 
         tfHargaMakanan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1039,12 +1079,14 @@ public class DisplaySWK extends javax.swing.JFrame {
         jLabel31.setText("Harga:");
 
         jLabel32.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        jLabel32.setText("Status Makanan:");
+        jLabel32.setText("Status:");
 
         cbStatusMakanan.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tersedia", "Habis" }));
-
-        jLabel21.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        jLabel21.setText("ID Stan:");
+        cbStatusMakanan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbStatusMakananActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
         jPanel9.setLayout(jPanel9Layout);
@@ -1053,36 +1095,21 @@ public class DisplaySWK extends javax.swing.JFrame {
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel9Layout.createSequentialGroup()
-                        .addComponent(jLabel21)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel9Layout.createSequentialGroup()
-                        .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel9Layout.createSequentialGroup()
-                                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel29)
-                                    .addComponent(jLabel31, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel30, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(tfIdMakanan, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
-                                    .addComponent(tfNamaMakanan)
-                                    .addComponent(tfHargaMakanan)
-                                    .addComponent(tfIdStan)))
-                            .addGroup(jPanel9Layout.createSequentialGroup()
-                                .addComponent(jLabel32)
-                                .addGap(18, 18, 18)
-                                .addComponent(cbStatusMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(24, Short.MAX_VALUE))))
+                    .addComponent(jLabel29)
+                    .addComponent(jLabel31, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel32))
+                .addGap(25, 25, 25)
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cbStatusMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(tfNamaMakanan, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
+                        .addComponent(tfHargaMakanan)))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel30)
-                    .addComponent(tfIdMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(28, 28, 28)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tfNamaMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel29))
@@ -1090,11 +1117,7 @@ public class DisplaySWK extends javax.swing.JFrame {
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel31)
                     .addComponent(tfHargaMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel21)
-                    .addComponent(tfIdStan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cbStatusMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel32))
@@ -1147,96 +1170,6 @@ public class DisplaySWK extends javax.swing.JFrame {
             }
         });
 
-        jPanel6.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel6.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-
-        jLabel18.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        jLabel18.setText("ID Minuman:");
-
-        jLabel23.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        jLabel23.setText("Nama Minuman:");
-
-        jLabel24.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        jLabel24.setText("Harga:");
-
-        jLabel25.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        jLabel25.setText("ID Stan:");
-
-        jLabel27.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
-        jLabel27.setText("Status Minuman:");
-
-        jTextField4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField4ActionPerformed(evt);
-            }
-        });
-
-        cbStatusMinuman.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tersedia", "Habis" }));
-        cbStatusMinuman.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbStatusMinumanActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addComponent(jLabel25)
-                        .addGap(70, 70, 70)
-                        .addComponent(jTextField4))
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addComponent(jLabel24)
-                        .addGap(77, 77, 77)
-                        .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 345, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addComponent(jLabel27)
-                        .addGap(24, 24, 24)
-                        .addComponent(cbStatusMinuman, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addComponent(jLabel18)
-                        .addGap(46, 46, 46)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 345, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addComponent(jLabel23)
-                        .addGap(26, 26, 26)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 345, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(21, Short.MAX_VALUE))
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel18)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel23)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel24)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel25)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel27)
-                    .addComponent(cbStatusMinuman, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        jLabel12.setFont(new java.awt.Font("Trebuchet MS", 1, 18)); // NOI18N
-        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel12.setText("Edit Menu Minuman");
-
         jLabel22.setFont(new java.awt.Font("Trebuchet MS", 1, 18)); // NOI18N
         jLabel22.setForeground(new java.awt.Color(255, 255, 255));
         jLabel22.setText("Tabel Makanan");
@@ -1248,9 +1181,7 @@ public class DisplaySWK extends javax.swing.JFrame {
             }
         });
 
-        btnHapusMinuman.setText("HAPUS");
-
-        TabelEditMakanan1.setModel(new javax.swing.table.DefaultTableModel(
+        TabelEditMinuman.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -1261,20 +1192,13 @@ public class DisplaySWK extends javax.swing.JFrame {
                 "ID ", "Nama ", "Harga", "Status "
             }
         ));
-        jScrollPane12.setViewportView(TabelEditMakanan1);
+        jScrollPane12.setViewportView(TabelEditMinuman);
 
         jLabel34.setFont(new java.awt.Font("Trebuchet MS", 1, 18)); // NOI18N
         jLabel34.setForeground(new java.awt.Color(255, 255, 255));
         jLabel34.setText("Tabel Minuman");
 
-        jButton1.setText("EDIT");
-
-        btnUbahMakanan1.setText("UBAH");
-        btnUbahMakanan1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnUbahMakanan1ActionPerformed(evt);
-            }
-        });
+        btnEditMinuman.setText("EDIT");
 
         javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
         jPanel11.setLayout(jPanel11Layout);
@@ -1283,9 +1207,6 @@ public class DisplaySWK extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel11Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel11Layout.createSequentialGroup()
-                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel11Layout.createSequentialGroup()
                         .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel28)
@@ -1299,10 +1220,9 @@ public class DisplaySWK extends javax.swing.JFrame {
                                 .addComponent(jLabel20)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(toggleButtonStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 184, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel11Layout.createSequentialGroup()
-                        .addComponent(jLabel12)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 148, Short.MAX_VALUE)
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(btnUbahMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnHapusMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1314,14 +1234,8 @@ public class DisplaySWK extends javax.swing.JFrame {
                         .addComponent(jLabel22)
                         .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, 519, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel34))
-                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnEditMinuman, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(137, 137, 137))
-            .addGroup(jPanel11Layout.createSequentialGroup()
-                .addGap(318, 318, 318)
-                .addComponent(btnHapusMinuman, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnUbahMakanan1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel11Layout.setVerticalGroup(
             jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1339,7 +1253,7 @@ public class DisplaySWK extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane12, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1))
+                        .addComponent(btnEditMinuman))
                     .addGroup(jPanel11Layout.createSequentialGroup()
                         .addComponent(jLabel28)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1351,23 +1265,12 @@ public class DisplaySWK extends javax.swing.JFrame {
                             .addComponent(jLabel20)
                             .addComponent(toggleButtonStatus))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel11Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(btnUbahMakanan)
-                                    .addComponent(btnHapusMakanan)))
-                            .addGroup(jPanel11Layout.createSequentialGroup()
-                                .addGap(27, 27, 27)
-                                .addComponent(jLabel12)))
+                        .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnHapusMinuman)
-                    .addComponent(btnUbahMakanan1))
-                .addContainerGap(55, Short.MAX_VALUE))
+                        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnUbahMakanan)
+                            .addComponent(btnHapusMakanan))))
+                .addContainerGap(121, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -1442,24 +1345,14 @@ public class DisplaySWK extends javax.swing.JFrame {
                 .addContainerGap(166, Short.MAX_VALUE))
         );
 
-        btnUbahMinuman.setText("UBAH");
-
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(115, 115, 115)
-                        .addComponent(jLabel26))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(316, 316, 316)
-                        .addComponent(btnUbahMinuman, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(64, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(60, Short.MAX_VALUE))
             .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel5Layout.createSequentialGroup()
                     .addContainerGap()
@@ -1469,11 +1362,7 @@ public class DisplaySWK extends javax.swing.JFrame {
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(206, 206, 206)
-                .addComponent(jLabel26)
-                .addGap(249, 249, 249)
-                .addComponent(btnUbahMinuman)
-                .addGap(80, 80, 80)
+                .addGap(574, 574, 574)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1510,11 +1399,9 @@ public class DisplaySWK extends javax.swing.JFrame {
         // TODO add your handling code here:
         String login = cbPilihan.getSelectedItem().toString();
 
-        if (!login.equals("Seller"))
-        {
+        if (!login.equals("Seller")) {
             JOptionPane.showMessageDialog(this, "Masuk Sebagai Customer");
-        }else if(login.equals("Customer"))
-        {
+        } else if (login.equals("Customer")) {
             JOptionPane.showMessageDialog(this, "Masuk Sebagai Seller");
         }
 
@@ -1523,11 +1410,11 @@ public class DisplaySWK extends javax.swing.JFrame {
     private void btnCariMinumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariMinumActionPerformed
         // TODO add your handling code here:
         String keyword = TFCariMinum.getText().trim();
-        if(keyword.length() == 0){
+        if (keyword.length() == 0) {
             loadMenuMinum();
             tampilMinuman();
-        }else{
-            cariMenuByKeyword(2, 2 ,keyword);
+        } else {
+            cariMenuByKeyword(2, 2, keyword);
             tampilMinuman();
             System.out.println("dsafdf");
         }
@@ -1536,11 +1423,11 @@ public class DisplaySWK extends javax.swing.JFrame {
     private void btnCariMakanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariMakanActionPerformed
         // TODO add your handling code here:
         String keyword = TFCariMakan.getText().trim();
-        if(keyword.length() == 0){
+        if (keyword.length() == 0) {
             loadMenuMakan();
             tampilMakanan();
-        }else{
-            cariMenuByKeyword(1, 2,keyword);
+        } else {
+            cariMenuByKeyword(1, 2, keyword);
             tampilMakanan();
 
         }
@@ -1550,10 +1437,10 @@ public class DisplaySWK extends javax.swing.JFrame {
     private void btnCariStanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariStanActionPerformed
         // TODO add your handling code here:
         String keyword = TFCariStan.getText().trim();
-        if(keyword.length() == 0){
+        if (keyword.length() == 0) {
             loadStan();
             tampilStan();
-        }else{
+        } else {
             cariStanByKeyword(keyword);
             tampilStan();
         }
@@ -1593,17 +1480,17 @@ public class DisplaySWK extends javax.swing.JFrame {
     private void ButtonKeranjangMinumanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonKeranjangMinumanActionPerformed
         // TODO add your handling code here:
         int barisTerpilih = TabelMenuMinuman.getSelectedRow();
-        int idStan = Integer.parseInt( TabelMenuMinuman.getValueAt(barisTerpilih, 0).toString());
-        int idMinuman = Integer.parseInt( TabelMenuMinuman.getValueAt(barisTerpilih, 1).toString());
-        String nama =  TabelMenuMinuman.getValueAt(barisTerpilih, 2).toString();
+        int idStan = Integer.parseInt(TabelMenuMinuman.getValueAt(barisTerpilih, 0).toString());
+        int idMinuman = Integer.parseInt(TabelMenuMinuman.getValueAt(barisTerpilih, 1).toString());
+        String nama = TabelMenuMinuman.getValueAt(barisTerpilih, 2).toString();
         int jumlah = Integer.parseInt(TFJumlahBeliMinuman.getText());
-        float harga =  Float.parseFloat(TabelMenuMinuman.getValueAt(barisTerpilih, 3).toString());
+        float harga = Float.parseFloat(TabelMenuMinuman.getValueAt(barisTerpilih, 3).toString());
         String catatan = TFCatatanMinuman.getText();
-        if(catatan.length()==0){
+        if (catatan.length() == 0) {
             catatan = " ";
         }
 
-        Keranjang keranjang = new Keranjang(idStan, idMinuman,nama,jumlah,harga,catatan);
+        Keranjang keranjang = new Keranjang(idStan, idMinuman, nama, jumlah, harga, catatan);
         krnjg.add(keranjang);
         tampilKeranjang();
         TFCatatanMinuman.setText("");
@@ -1614,17 +1501,17 @@ public class DisplaySWK extends javax.swing.JFrame {
         // TODO add your handling code here:
         LocalDate tanggalSaatIni = LocalDate.now();
         int barisTerpilih = TabelMenuMakanan.getSelectedRow();
-        int idStan = Integer.parseInt( TabelMenuMakanan.getValueAt(barisTerpilih, 0).toString());
-        int idMakanan = Integer.parseInt( TabelMenuMakanan.getValueAt(barisTerpilih, 1).toString());
-        String nama =  TabelMenuMakanan.getValueAt(barisTerpilih, 2).toString();
+        int idStan = Integer.parseInt(TabelMenuMakanan.getValueAt(barisTerpilih, 0).toString());
+        int idMakanan = Integer.parseInt(TabelMenuMakanan.getValueAt(barisTerpilih, 1).toString());
+        String nama = TabelMenuMakanan.getValueAt(barisTerpilih, 2).toString();
         int jumlah = Integer.parseInt(TFJumlahBeliMakan.getText());
-        float harga =  Float.parseFloat(TabelMenuMakanan.getValueAt(barisTerpilih, 3).toString());
+        float harga = Float.parseFloat(TabelMenuMakanan.getValueAt(barisTerpilih, 3).toString());
         String catatan = TFCatatanMakanan.getText();
-        if(catatan.length()==0){
+        if (catatan.length() == 0) {
             catatan = " ";
         }
 
-        Keranjang keranjang = new Keranjang(idStan, idMakanan,nama,jumlah,harga,catatan);
+        Keranjang keranjang = new Keranjang(idStan, idMakanan, nama, jumlah, harga, catatan);
         krnjg.add(keranjang);
         tampilKeranjang();
         TFCatatanMakanan.setText("");
@@ -1639,13 +1526,13 @@ public class DisplaySWK extends javax.swing.JFrame {
         // TODO add your handling code here:
         int barisTerpilih = TabelStan.getSelectedRow();
         String keyword = modelStan.getValueAt(barisTerpilih, 1).toString();
-        if(keyword.length() == 0){
+        if (keyword.length() == 0) {
             loadMenuMakan();
             tampilMakanan();
             loadMenuMinum();
             tampilMinuman();
-        }else{
-            cariMenuByKeyword(3, 1 ,keyword);
+        } else {
+            cariMenuByKeyword(3, 1, keyword);
         }
 
     }//GEN-LAST:event_btnTampilkanMenuActionPerformed
@@ -1662,20 +1549,21 @@ public class DisplaySWK extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_tfNamaMakananActionPerformed
 
-    private void tfIdMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfIdMakananActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tfIdMakananActionPerformed
-
     private void tfHargaMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfHargaMakananActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_tfHargaMakananActionPerformed
 
     private void toggleButtonStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleButtonStatusActionPerformed
         // TODO add your handling code here:
+        loadMenuMakan(1);
+        tampilMakanan();
+        tampilMinuman();
     }//GEN-LAST:event_toggleButtonStatusActionPerformed
 
     private void btnUbahMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUbahMakananActionPerformed
         // TODO add your handling code here:
+        editMenu(1, 2);
+
     }//GEN-LAST:event_btnUbahMakananActionPerformed
 
     private void btnHapusMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusMakananActionPerformed
@@ -1688,66 +1576,28 @@ public class DisplaySWK extends javax.swing.JFrame {
 
     private void btnEditMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditMakananActionPerformed
         // TODO add your handling code here:
-        try {
-            int idMakanan = Integer.parseInt(tfIdMakanan.getText());
-            int idStan = Integer.parseInt(tfIdStan.getText());
-            String namaMakanan = tfNamaMakanan.getText();
-            float hargaMakanan = Float.parseFloat(tfHargaMakanan.getText());
-            int statusMakanan = Integer.parseInt(cbStatusMakanan.getSelectedItem().toString());
-
-            String kueri = "INSERT INTO makanan (idMakanan, namaMakanan, hargaMakanan, statusMakanan, idStan) VALUES (?, ?, ?, ?, ?)";
-            PreparedStatement ps = con.prepareStatement(kueri);
-            ps.setInt(1, idMakanan);
-            ps.setString(2, namaMakanan);
-            ps.setFloat(3, hargaMakanan);
-            ps.setInt(4, statusMakanan);
-            ps.setInt(5, idStan);
-
-            int rowsAffected = ps.executeUpdate();
-            String stts;
-
-            if (statusMakanan == 1) {
-                stts = "Tersedia";
-            } else {
-                stts = "Habis";
+       try{
+                PreparedStatement ps = con.prepareStatement("Select * from menu WHERE ID_Stan");
+                ResultSet rs = ps.executeQuery();
+                if(rs.next() == true){
+                    tfNamaMakanan.setText(rs.getString(1));
+                    tfHargaMakanan.setText(rs.getString(2));
+                }else{
+                    JOptionPane.showMessageDialog(this, "Data Tidak Di Temukan");
+                }
+                   
+            } catch (SQLException ex) {
+                Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
             }
-
-            if (rowsAffected == 1) {
-                JOptionPane.showMessageDialog(this, "Insert Data Successfully");
-                tfIdMakanan.setText("");
-                tfNamaMakanan.setText("");
-                tfHargaMakanan.setText("");
-                cbStatusMakanan.setSelectedIndex(0);
-                tfIdStan.setText("");
-            } else {
-                JOptionPane.showMessageDialog(this, "Insert Data Failed");
-            }
-
-            ps.close();
-            con.close(); // Close the connection after use.
-        } catch (SQLException ex) {
-            Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Invalid input for ID or Price. Please enter valid numeric values.");
-        }
     }//GEN-LAST:event_btnEditMakananActionPerformed
 
-    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
+    private void cbStatusMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbStatusMakananActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField4ActionPerformed
-
-    private void cbStatusMinumanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbStatusMinumanActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cbStatusMinumanActionPerformed
-
-    private void btnUbahMakanan1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUbahMakanan1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnUbahMakanan1ActionPerformed
+    }//GEN-LAST:event_cbStatusMakananActionPerformed
 
     /**
      * @param args the command line arguments
      */
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ButtonHapusPesanan;
@@ -1764,7 +1614,7 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JTextField TFNomorMeja;
     private javax.swing.JTextField TFTotalHarga;
     private javax.swing.JTable TabelEditMakanan;
-    private javax.swing.JTable TabelEditMakanan1;
+    private javax.swing.JTable TabelEditMinuman;
     private javax.swing.JTable TabelKeranjang;
     private javax.swing.JTable TabelMenuMakanan;
     private javax.swing.JTable TabelMenuMinuman;
@@ -1774,43 +1624,30 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JButton btnCariMinum;
     private javax.swing.JButton btnCariStan;
     private javax.swing.JButton btnEditMakanan;
+    private javax.swing.JButton btnEditMinuman;
     private javax.swing.JButton btnHapusMakanan;
-    private javax.swing.JButton btnHapusMinuman;
     private javax.swing.JButton btnLanjut;
     private javax.swing.JButton btnReset;
     private javax.swing.JButton btnTampilkanMenu;
     private javax.swing.JButton btnUbahMakanan;
-    private javax.swing.JButton btnUbahMakanan1;
-    private javax.swing.JButton btnUbahMinuman;
     private javax.swing.JComboBox<String> cbPilihan;
     private javax.swing.JComboBox<String> cbStatusMakanan;
-    private javax.swing.JComboBox<String> cbStatusMinuman;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
-    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
-    private javax.swing.JLabel jLabel23;
-    private javax.swing.JLabel jLabel24;
-    private javax.swing.JLabel jLabel25;
-    private javax.swing.JLabel jLabel26;
-    private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel31;
     private javax.swing.JLabel jLabel32;
     private javax.swing.JLabel jLabel34;
@@ -1828,7 +1665,6 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane10;
@@ -1843,18 +1679,12 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JTabbedPane jTabbedPane3;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField7;
     private javax.swing.JPanel panelLogin;
     private javax.swing.JPanel panelPesanan;
     private javax.swing.JTable tbPesanan;
     private javax.swing.JTextField tfCari;
     private javax.swing.JTextField tfHargaMakanan;
-    private javax.swing.JTextField tfIdMakanan;
-    private javax.swing.JTextField tfIdStan;
     private javax.swing.JTextField tfNamaMakanan;
     private javax.swing.JTextField tfNamaStan;
     private javax.swing.JToggleButton toggleButtonStatus;
