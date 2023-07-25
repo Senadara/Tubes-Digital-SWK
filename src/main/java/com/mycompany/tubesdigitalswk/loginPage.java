@@ -28,18 +28,21 @@ public class loginPage extends javax.swing.JFrame {
         initComponents();
         con = Koneksi.bukaKoneksi();
         setLocationRelativeTo(null);
-        login("nur_cahyani@gmail.com", "1001");
+        login("nur_cahyani@gmail.com", 1001);
         System.out.println("slebew1");
 //                System.out.println(seller.getNama());
     }
 
-    private void login(String email, String password) {
+    private void login(String email, int password) {
         if(con != null){
             
-            String kueri = "SELECT s.Email, s.ID_Seller, stn.ID_Stan, stn.Nama_Stan, stn.Nomor_Stan, stn.status FROM seller s INNER JOIN stan stn ON s.ID_Stan = stn.ID_Stan WHERE Email = "+email+" AND ID_Seller = "+password;
+            String kueri = "SELECT s.Email, s.ID_Seller, stn.ID_Stan, stn.Nama_Stan, stn.Nomor_Stan, stn.status FROM seller s INNER JOIN stan stn ON s.ID_Stan = stn.ID_Stan WHERE Email = ? AND ID_Seller = ? ;";
             try{
                 PreparedStatement ps = con.prepareStatement(kueri);
+                ps.setString(1, email);
+                ps.setInt(2, password);
                 ResultSet rs = ps.executeQuery();
+                    while (rs.next()) {
                     int id = rs.getInt("ID_Stan");
                     String nama = rs.getString("Nama_Stan");
                     int noStan = rs.getInt("Nomor_Stan");
@@ -48,7 +51,7 @@ public class loginPage extends javax.swing.JFrame {
                     System.out.println(nama);
                     System.out.println("slebew");
                     seller = new Stan(id,  noStan, nama, status);
-                
+                    }
                 rs.close();
                 ps.close();
             }catch(SQLException ex){
