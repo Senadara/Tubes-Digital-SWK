@@ -1077,10 +1077,10 @@
                                       </Group>
                                       <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="cbStatusMakanan" min="-2" pref="120" max="-2" attributes="0"/>
+                                          <Component id="cbStatusMenu" min="-2" pref="120" max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                              <Component id="tfNamaMakanan" alignment="0" pref="350" max="32767" attributes="0"/>
-                                              <Component id="tfHargaMakanan" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="tfNamaMenu" alignment="0" pref="350" max="32767" attributes="0"/>
+                                              <Component id="tfHargaMenu" alignment="0" max="32767" attributes="0"/>
                                           </Group>
                                       </Group>
                                       <EmptySpace pref="24" max="32767" attributes="0"/>
@@ -1092,17 +1092,17 @@
                                   <Group type="102" alignment="1" attributes="0">
                                       <EmptySpace min="-2" pref="28" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="3" attributes="0">
-                                          <Component id="tfNamaMakanan" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="tfNamaMenu" alignment="3" min="-2" max="-2" attributes="0"/>
                                           <Component id="jLabel29" alignment="3" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="3" attributes="0">
                                           <Component id="jLabel31" alignment="3" min="-2" max="-2" attributes="0"/>
-                                          <Component id="tfHargaMakanan" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="tfHargaMenu" alignment="3" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace pref="10" max="32767" attributes="0"/>
                                       <Group type="103" groupAlignment="3" attributes="0">
-                                          <Component id="cbStatusMakanan" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          <Component id="cbStatusMenu" alignment="3" min="-2" max="-2" attributes="0"/>
                                           <Component id="jLabel32" alignment="3" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
@@ -1111,9 +1111,9 @@
                             </DimensionLayout>
                           </Layout>
                           <SubComponents>
-                            <Component class="javax.swing.JTextField" name="tfNamaMakanan">
+                            <Component class="javax.swing.JTextField" name="tfNamaMenu">
                               <Events>
-                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tfNamaMakananActionPerformed"/>
+                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tfNamaMenuActionPerformed"/>
                               </Events>
                             </Component>
                             <Component class="javax.swing.JLabel" name="jLabel29">
@@ -1124,9 +1124,9 @@
                                 <Property name="text" type="java.lang.String" value="Nama Menu:"/>
                               </Properties>
                             </Component>
-                            <Component class="javax.swing.JTextField" name="tfHargaMakanan">
+                            <Component class="javax.swing.JTextField" name="tfHargaMenu">
                               <Events>
-                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tfHargaMakananActionPerformed"/>
+                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tfHargaMenuActionPerformed"/>
                               </Events>
                             </Component>
                             <Component class="javax.swing.JLabel" name="jLabel31">
@@ -1145,7 +1145,7 @@
                                 <Property name="text" type="java.lang.String" value="Status:"/>
                               </Properties>
                             </Component>
-                            <Component class="javax.swing.JComboBox" name="cbStatusMakanan">
+                            <Component class="javax.swing.JComboBox" name="cbStatusMenu">
                               <Properties>
                                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                                   <StringArray count="2">
@@ -1155,7 +1155,7 @@
                                 </Property>
                               </Properties>
                               <Events>
-                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbStatusMakananActionPerformed"/>
+                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbStatusMenuActionPerformed"/>
                               </Events>
                               <AuxValues>
                                 <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
@@ -1304,6 +1304,9 @@
                           <Properties>
                             <Property name="text" type="java.lang.String" value="EDIT"/>
                           </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnEditMinumanActionPerformed"/>
+                          </Events>
                         </Component>
                       </SubComponents>
                     </Container>

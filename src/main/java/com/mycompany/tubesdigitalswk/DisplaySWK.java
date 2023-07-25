@@ -408,9 +408,9 @@ public class DisplaySWK extends javax.swing.JFrame {
     private void editMenu(int idMakan, int type) {
         if (con != null) {
             int idStan = 2001; //nanti dirubah
-            String namaMakanan = tfNamaMakanan.getText();
-            float hargaMakanan = Float.parseFloat(tfHargaMakanan.getText());
-            int statusMakanan = Integer.parseInt(cbStatusMakanan.getSelectedItem().toString());
+            String namaMakanan = tfNamaMenu.getText();
+            float hargaMakanan = Float.parseFloat(tfHargaMenu.getText());
+            int statusMakanan = Integer.parseInt(cbStatusMenu.getSelectedItem().toString());
             String kueri = "INSERT INTO menu (ID_Menu, Type, Nama, Harga, Status, ID_Stan) VALUES (?, ?, ?, ?, ?, ?)";
             try {
                 PreparedStatement ps = con.prepareStatement(kueri);
@@ -426,9 +426,9 @@ public class DisplaySWK extends javax.swing.JFrame {
 
                 if (rowsAffected == 1) {
                     JOptionPane.showMessageDialog(this, "Insert Data Successfully");
-                    tfNamaMakanan.setText("");
-                    tfHargaMakanan.setText("");
-                    cbStatusMakanan.setSelectedIndex(0);
+                    tfNamaMenu.setText("");
+                    tfHargaMenu.setText("");
+                    cbStatusMenu.setSelectedIndex(0);
                 } else {
                     JOptionPane.showMessageDialog(this, "Insert Data Failed");
                 }
@@ -439,6 +439,40 @@ public class DisplaySWK extends javax.swing.JFrame {
                 Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+    
+    private void fungsiEditMenuMakanan(){
+      int barisTerpilih = TabelEditMakanan.getSelectedRow(); 
+
+    if (barisTerpilih == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih Baris Untuk Di Edit");
+        return;
+    }
+    String editNamaMakanan = TabelEditMakanan.getValueAt(barisTerpilih, 2).toString();
+    String editHargaMakanan = TabelEditMakanan.getValueAt(barisTerpilih, 3).toString();
+    String editStatusMakanan = TabelEditMakanan.getValueAt(barisTerpilih, 4).toString();
+
+    tfNamaMenu.setText(editNamaMakanan); 
+    tfHargaMenu.setText(editHargaMakanan);
+    cbStatusMenu.setSelectedItem(editStatusMakanan); 
+        
+    }
+    
+      private void fungsiEditMenuMinuman(){
+      int barisTerpilih = TabelEditMinuman.getSelectedRow(); 
+
+    if (barisTerpilih == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih Baris Untuk Di Edit");
+        return;
+    }
+    String editNamaMinuman = TabelEditMinuman.getValueAt(barisTerpilih, 2).toString();
+    String editHargaMinuman = TabelEditMinuman.getValueAt(barisTerpilih, 3).toString();
+    String editStatusMinuman = TabelEditMinuman.getValueAt(barisTerpilih, 4).toString();
+
+    tfNamaMenu.setText(editNamaMinuman); 
+    tfHargaMenu.setText(editHargaMinuman);
+    cbStatusMenu.setSelectedItem(editStatusMinuman); 
+        
     }
 
     /**
@@ -511,12 +545,12 @@ public class DisplaySWK extends javax.swing.JFrame {
         jPanel11 = new javax.swing.JPanel();
         jLabel28 = new javax.swing.JLabel();
         jPanel9 = new javax.swing.JPanel();
-        tfNamaMakanan = new javax.swing.JTextField();
+        tfNamaMenu = new javax.swing.JTextField();
         jLabel29 = new javax.swing.JLabel();
-        tfHargaMakanan = new javax.swing.JTextField();
+        tfHargaMenu = new javax.swing.JTextField();
         jLabel31 = new javax.swing.JLabel();
         jLabel32 = new javax.swing.JLabel();
-        cbStatusMakanan = new javax.swing.JComboBox<>();
+        cbStatusMenu = new javax.swing.JComboBox<>();
         jLabel36 = new javax.swing.JLabel();
         jScrollPane11 = new javax.swing.JScrollPane();
         TabelEditMakanan = new javax.swing.JTable();
@@ -1060,18 +1094,18 @@ public class DisplaySWK extends javax.swing.JFrame {
         jPanel9.setBackground(new java.awt.Color(255, 255, 255));
         jPanel9.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        tfNamaMakanan.addActionListener(new java.awt.event.ActionListener() {
+        tfNamaMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tfNamaMakananActionPerformed(evt);
+                tfNamaMenuActionPerformed(evt);
             }
         });
 
         jLabel29.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel29.setText("Nama Menu:");
 
-        tfHargaMakanan.addActionListener(new java.awt.event.ActionListener() {
+        tfHargaMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tfHargaMakananActionPerformed(evt);
+                tfHargaMenuActionPerformed(evt);
             }
         });
 
@@ -1081,10 +1115,10 @@ public class DisplaySWK extends javax.swing.JFrame {
         jLabel32.setFont(new java.awt.Font("SansSerif", 0, 12)); // NOI18N
         jLabel32.setText("Status:");
 
-        cbStatusMakanan.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tersedia", "Habis" }));
-        cbStatusMakanan.addActionListener(new java.awt.event.ActionListener() {
+        cbStatusMenu.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Tersedia", "Habis" }));
+        cbStatusMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbStatusMakananActionPerformed(evt);
+                cbStatusMenuActionPerformed(evt);
             }
         });
 
@@ -1100,10 +1134,10 @@ public class DisplaySWK extends javax.swing.JFrame {
                     .addComponent(jLabel32))
                 .addGap(25, 25, 25)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cbStatusMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbStatusMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(tfNamaMakanan, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
-                        .addComponent(tfHargaMakanan)))
+                        .addComponent(tfNamaMenu, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
+                        .addComponent(tfHargaMenu)))
                 .addContainerGap(24, Short.MAX_VALUE))
         );
         jPanel9Layout.setVerticalGroup(
@@ -1111,15 +1145,15 @@ public class DisplaySWK extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
                 .addGap(28, 28, 28)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(tfNamaMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(tfNamaMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel29))
                 .addGap(8, 8, 8)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel31)
-                    .addComponent(tfHargaMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tfHargaMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cbStatusMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbStatusMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel32))
                 .addGap(35, 35, 35))
         );
@@ -1199,6 +1233,11 @@ public class DisplaySWK extends javax.swing.JFrame {
         jLabel34.setText("Tabel Minuman");
 
         btnEditMinuman.setText("EDIT");
+        btnEditMinuman.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditMinumanActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
         jPanel11.setLayout(jPanel11Layout);
@@ -1545,13 +1584,13 @@ public class DisplaySWK extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_tfCariActionPerformed
 
-    private void tfNamaMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfNamaMakananActionPerformed
+    private void tfNamaMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfNamaMenuActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_tfNamaMakananActionPerformed
+    }//GEN-LAST:event_tfNamaMenuActionPerformed
 
-    private void tfHargaMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfHargaMakananActionPerformed
+    private void tfHargaMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfHargaMenuActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_tfHargaMakananActionPerformed
+    }//GEN-LAST:event_tfHargaMenuActionPerformed
 
     private void toggleButtonStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggleButtonStatusActionPerformed
         // TODO add your handling code here:
@@ -1576,16 +1615,17 @@ public class DisplaySWK extends javax.swing.JFrame {
 
     private void btnEditMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditMakananActionPerformed
         // TODO add your handling code here:
-         int barisTerpilih = TabelEditMakanan.getSelectedRow();
-        String namaMakanan = TabelEditMakanan.getValueAt(barisTerpilih, 2).toString();
-        tfNamaMakanan.setText(namaMakanan);
-        String hargaMakanan = TabelEditMakanan.getValueAt(barisTerpilih, 3).toString();
-        tfHargaMakanan.setText(hargaMakanan);
+         fungsiEditMenuMakanan();
     }//GEN-LAST:event_btnEditMakananActionPerformed
 
-    private void cbStatusMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbStatusMakananActionPerformed
+    private void cbStatusMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbStatusMenuActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_cbStatusMakananActionPerformed
+    }//GEN-LAST:event_cbStatusMenuActionPerformed
+
+    private void btnEditMinumanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditMinumanActionPerformed
+        // TODO add your handling code here:
+        fungsiEditMenuMinuman();
+    }//GEN-LAST:event_btnEditMinumanActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1623,7 +1663,7 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JButton btnTampilkanMenu;
     private javax.swing.JButton btnUbahMakanan;
     private javax.swing.JComboBox<String> cbPilihan;
-    private javax.swing.JComboBox<String> cbStatusMakanan;
+    private javax.swing.JComboBox<String> cbStatusMenu;
     private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -1676,8 +1716,8 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JPanel panelPesanan;
     private javax.swing.JTable tbPesanan;
     private javax.swing.JTextField tfCari;
-    private javax.swing.JTextField tfHargaMakanan;
-    private javax.swing.JTextField tfNamaMakanan;
+    private javax.swing.JTextField tfHargaMenu;
+    private javax.swing.JTextField tfNamaMenu;
     private javax.swing.JTextField tfNamaStan;
     private javax.swing.JToggleButton toggleButtonStatus;
     // End of variables declaration//GEN-END:variables
