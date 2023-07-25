@@ -4,6 +4,12 @@
  */
 package com.mycompany.tubesdigitalswk;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -11,15 +17,46 @@ import javax.swing.JOptionPane;
  * @author DEO
  */
 public class loginPage extends javax.swing.JFrame {
+    
+    private Connection con;
+    private Stan seller;
 
     /**
      * Creates new form loginPage
      */
     public loginPage() {
         initComponents();
+        con = Koneksi.bukaKoneksi();
         setLocationRelativeTo(null);
+        login("nur_cahyani@gmail.com", "1001");
+        System.out.println("slebew1");
+//                System.out.println(seller.getNama());
     }
 
+    private void login(String email, String password) {
+        if(con != null){
+            
+            String kueri = "SELECT s.Email, s.ID_Seller, stn.ID_Stan, stn.Nama_Stan, stn.Nomor_Stan, stn.status FROM seller s INNER JOIN stan stn ON s.ID_Stan = stn.ID_Stan WHERE Email = "+email+" AND ID_Seller = "+password;
+            try{
+                PreparedStatement ps = con.prepareStatement(kueri);
+                ResultSet rs = ps.executeQuery();
+                    int id = rs.getInt("ID_Stan");
+                    String nama = rs.getString("Nama_Stan");
+                    int noStan = rs.getInt("Nomor_Stan");
+                    int status = rs.getInt("status");
+                    
+                    System.out.println(nama);
+                    System.out.println("slebew");
+                    seller = new Stan(id,  noStan, nama, status);
+                
+                rs.close();
+                ps.close();
+            }catch(SQLException ex){
+                Logger.getLogger(loginPage.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -234,10 +271,12 @@ public class loginPage extends javax.swing.JFrame {
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         // TODO add your handling code here:
+        
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void jtEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtEmailActionPerformed
         // TODO add your handling code here:
+        
     }//GEN-LAST:event_jtEmailActionPerformed
 
     private void cbPilihanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPilihanActionPerformed

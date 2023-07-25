@@ -24,8 +24,6 @@ public class PilihanMakan extends javax.swing.JFrame {
     private DefaultTableModel modelMeja = new DefaultTableModel();
     private ArrayList<Booking> bm = new ArrayList<>();
     
-    
-    
     void loadKolomBookingMeja(){
         modelMeja.addColumn("No. Meja");
         modelMeja.addColumn("Jumlah Kursi");
@@ -186,7 +184,7 @@ public class PilihanMakan extends javax.swing.JFrame {
 
         if (booking.equals("On Site"))
         {
-            JOptionPane.showMessageDialog(this, "Silahkan Booking Terlebih Dahulu");
+            JOptionPane.showMessageDialog(this, "");
             
         }else if(booking.equals("Take Away"))
         {
