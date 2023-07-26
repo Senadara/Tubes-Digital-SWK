@@ -290,12 +290,12 @@ public class loginPage extends javax.swing.JFrame {
         // TODO add your handling code here:
         String login = cbPilihan.getSelectedItem().toString();
         
-        if (!login.equals("Seller"))
+        if (login.equals("Seller"))
             {
-                JOptionPane.showMessageDialog(this, "Masuk Sebagai Customer");   
+                JOptionPane.showMessageDialog(this, "Masuk Sebagai Seller");   
             }else if(login.equals("Customer"))
             {
-                JOptionPane.showMessageDialog(this, "Masuk Sebagai Seller");
+                JOptionPane.showMessageDialog(this, "Masuk Sebagai Customer");
             }
          
     }//GEN-LAST:event_btnLanjutActionPerformed
