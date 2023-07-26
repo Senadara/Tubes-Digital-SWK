@@ -27,6 +27,7 @@ public class PilihanMakan extends javax.swing.JFrame {
     void loadKolomBookingMeja(){
         modelMeja.addColumn("No. Meja");
         modelMeja.addColumn("Jumlah Kursi");
+        modelMeja.addColumn("ID Meja");
         modelMeja.addColumn("Status");
         jtBooking.setModel(modelMeja);
     }
@@ -58,7 +59,7 @@ public class PilihanMakan extends javax.swing.JFrame {
     private void tampilBooking(){
         modelMeja.setRowCount(0);
         for(Booking b: bm){
-            modelMeja.addRow(new Object [] {b.getID(), b.getNomorMeja(), b.getJumlahKursi(), b.getStatus()});
+            modelMeja.addRow(new Object [] {b.getNomorMeja(), b.getJumlahKursi(), b.getID(), b.getStatus()});
         }
     }
 

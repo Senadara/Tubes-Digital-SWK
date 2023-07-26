@@ -35,7 +35,7 @@ public class Booking {
         if(status == 1){
             stts = "Tersedia";
         }else{
-            stts = "Habis";
+            stts = "Booked";
         }
         return stts;
     }
