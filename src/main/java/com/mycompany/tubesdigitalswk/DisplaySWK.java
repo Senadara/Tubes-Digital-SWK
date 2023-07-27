@@ -123,12 +123,12 @@ public class DisplaySWK extends javax.swing.JFrame {
     }
     
     //Method ambil menu ke database untuk seller
-    private void loadMenuMakan(int metode) {
-        if (con != null) {
-            int idStn = seller.getID();
+    private void loadMenu(int metode) {
+        if (con != null) {    
             ArrayList<Makanan> mknn = new ArrayList<>();
             ArrayList<Minuman> mnmn = new ArrayList<>();
             if (metode == 1){
+            int idStn = seller.getID();
             String kueri = "Select * from menu WHERE ID_Stan = " + idStn;
             try {
                 PreparedStatement ps = con.prepareStatement(kueri);
@@ -155,14 +155,8 @@ public class DisplaySWK extends javax.swing.JFrame {
             } catch (SQLException ex) {
                 Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-        }
-    }
-
-    private void loadMenuMakan() {
-        if (con != null) {
-            mkn = new ArrayList<>();
-            String kueri = "Select * from menu WHERE Type = 1;";
+        }else{
+                String kueri = "Select * from menu;";
             try {
                 PreparedStatement ps = con.prepareStatement(kueri);
                 ResultSet rs = ps.executeQuery();
@@ -172,42 +166,26 @@ public class DisplaySWK extends javax.swing.JFrame {
                     float harga = rs.getFloat("Harga");
                     int status = rs.getInt("status");
                     int idStan = rs.getInt("ID_Stan");
-
+                    int type = rs.getInt("Type");
+                    if (type == 1){
                     Makanan makanan = new Makanan(id, nama, harga, idStan, status);
-                    mkn.add(makanan);
-                }
-                rs.close();
-                ps.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
-    private void loadMenuMinum() {
-        if (con != null) {
-            mnm = new ArrayList<>();
-            String kueri = "Select * from menu WHERE Type = 2;";
-            try {
-                PreparedStatement ps = con.prepareStatement(kueri);
-                ResultSet rs = ps.executeQuery();
-                while (rs.next()) {
-                    int id = rs.getInt("ID_Menu");
-                    String nama = rs.getString("Nama");
-                    float harga = rs.getFloat("Harga");
-                    int status = rs.getInt("status");
-                    int idStan = rs.getInt("ID_Stan");
-
+                    mknn.add(makanan);
+                    }else{
                     Minuman minuman = new Minuman(id, nama, harga, idStan, status);
-                    mnm.add(minuman);
+                    mnmn.add(minuman);   
+                    }
                 }
+                mkn = mknn;
+                mnm = mnmn;
                 rs.close();
                 ps.close();
             } catch (SQLException ex) {
                 Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
             }
+            }
         }
     }
+
     
     private void loadBookingMeja(){
         if(con != null){
@@ -298,9 +276,8 @@ public class DisplaySWK extends javax.swing.JFrame {
     private void reset() {
         loadStan();
         tampilStan();
-        loadMenuMakan();
+        loadMenu(2);
         tampilMakanan();
-        loadMenuMinum();
         tampilMinuman();
     }
 
@@ -482,6 +459,7 @@ public class DisplaySWK extends javax.swing.JFrame {
 
     private void editMenu(String tombol) {
         if (con != null) {
+            String menuId = " ";
             int type = radioButton();
             int idStan = seller.getID(); 
             String namaMakanan = tfNamaMenu.getText();
@@ -490,20 +468,24 @@ public class DisplaySWK extends javax.swing.JFrame {
             System.out.println(type);
             String kueri;
             if (tombol.equals("Ubah")){
-                 kueri = "UPDATE `menu` SET `ID_Menu`=?,`Type`=?,`Nama`=?,`Harga`=?,`Status`=?,`ID_Stan`=? where ID_Menu = ?";
+                 kueri = "UPDATE `menu` SET `Type`=?,`Nama`=?,`Harga`=?,`Status`=?,`ID_Stan`=?, `ID_Menu`=? where ID_Menu = ?;";
+                 
             }else{
-                 kueri = "INSERT INTO menu (ID_Menu, Type, Nama, Harga, Status, ID_Stan) VALUES (?, ?, ?, ?, ?, ?)";
+                 kueri = "INSERT INTO menu ( Type, Nama, Harga, Status, ID_Stan) VALUES (?, ?, ?, ?, ?);";
             }   
             try {
                 PreparedStatement ps = con.prepareStatement(kueri);
-                ps.setInt(1, idMenu);
-                ps.setInt(2, type);
-                ps.setString(3, namaMakanan);
-                ps.setFloat(4, hargaMakanan);
-                ps.setInt(5, statusMakanan);
-                ps.setInt(6, idStan);
+         
+                ps.setInt(1, type);
+                ps.setString(2, namaMakanan);
+                ps.setFloat(3, hargaMakanan);
+                ps.setInt(4, statusMakanan);
+                ps.setInt(5, idStan);
                 if (tombol.equals("Ubah")){
+                ps.setInt(6, idMenu);
                 ps.setInt(7,idMenu);
+                }else{
+                   // ps.setString(6, menuId);
                 }
 
                 int rowsAffected = ps.executeUpdate();
@@ -1299,7 +1281,7 @@ public class DisplaySWK extends javax.swing.JFrame {
             }
         });
 
-        btnUbahMakanan.setText("UBAH");
+        btnUbahMakanan.setText("SUBMIT");
         btnUbahMakanan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnUbahMakananActionPerformed(evt);
@@ -2015,7 +1997,7 @@ public class DisplaySWK extends javax.swing.JFrame {
         // TODO add your handling code here:
         String keyword = TFCariMinum.getText().trim();
         if (keyword.length() == 0) {
-            loadMenuMinum();
+            loadMenu(2);
             tampilMinuman();
         } else {
             cariMenuByKeyword(2, 2, keyword);
@@ -2028,7 +2010,7 @@ public class DisplaySWK extends javax.swing.JFrame {
         // TODO add your handling code here:
         String keyword = TFCariMakan.getText().trim();
         if (keyword.length() == 0) {
-            loadMenuMakan();
+            loadMenu(2);
             tampilMakanan();
         } else {
             cariMenuByKeyword(1, 2, keyword);
@@ -2131,9 +2113,8 @@ public class DisplaySWK extends javax.swing.JFrame {
         int barisTerpilih = TabelStan.getSelectedRow();
         String keyword = modelStan.getValueAt(barisTerpilih, 1).toString();
         if (keyword.length() == 0) {
-            loadMenuMakan();
+            loadMenu(2);
             tampilMakanan();
-            loadMenuMinum();
             tampilMinuman();
         } else {
             cariMenuByKeyword(3, 1, keyword);
@@ -2193,7 +2174,7 @@ public class DisplaySWK extends javax.swing.JFrame {
         // TODO add your handling code here:
         String tombol = btnUbahMakanan.getText();
         editMenu(tombol);
-        loadMenuMakan(1);
+        loadMenu(1);
         tampilMakanan();
         tampilMinuman();
     }//GEN-LAST:event_btnUbahMakananActionPerformed
@@ -2230,7 +2211,7 @@ public class DisplaySWK extends javax.swing.JFrame {
             jTabbedPane.setSelectedIndex(3);
         }
         txtNamaStan.setText(seller.getNama());
-        loadMenuMakan(1);
+        loadMenu(1);
         tampilMakanan();
         tampilMinuman();
         statusStan();
