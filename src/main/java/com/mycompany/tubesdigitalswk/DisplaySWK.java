@@ -34,6 +34,7 @@ public class DisplaySWK extends javax.swing.JFrame {
     private DefaultTableModel modelKeranjang = new DefaultTableModel(){public boolean isCellEditable(int row, int column) {return false;}};
     private DefaultTableModel modelMeja = new DefaultTableModel(){public boolean isCellEditable(int row, int column) {return false;}};
     private ButtonGroup buttonGroup = new ButtonGroup();
+    private Customer customer;
     private Stan seller;
     
     private ArrayList<Stan> stn = new ArrayList<>();
@@ -270,6 +271,9 @@ public class DisplaySWK extends javax.swing.JFrame {
         buttonGroup.add(RBJenisMinum);
         TFKursi.setEditable(false);
         TFMeja.setEditable(false);
+        TFNamaCustomer.setEditable(false);
+        TFNoTelpCustomer.setEditable(false);
+        TFNomorMeja.setEditable(false);
         reset();
     }
 
@@ -484,8 +488,6 @@ public class DisplaySWK extends javax.swing.JFrame {
                 if (tombol.equals("Ubah")){
                 ps.setInt(6, idMenu);
                 ps.setInt(7,idMenu);
-                }else{
-                   // ps.setString(6, menuId);
                 }
 
                 int rowsAffected = ps.executeUpdate();
@@ -494,7 +496,7 @@ public class DisplaySWK extends javax.swing.JFrame {
                     tfNamaMenu.setText("");
                     tfHargaMenu.setText("");
                     cbStatusMenu.setSelectedIndex(0);
-                    btnUbahMakanan.setText("Submit");
+                    btnSubmitMenu.setText("Submit");
                 } else {
                     JOptionPane.showMessageDialog(this, "Insert Data Failed");
                 }
@@ -614,6 +616,31 @@ public class DisplaySWK extends javax.swing.JFrame {
         }
     }
     }
+    
+    private void bookingMeja(int statusBooking){
+        if(con != null){
+            String kueri;
+            int nomor = Integer.parseInt(TFMeja.getText());
+            if (statusBooking == 1){
+            kueri = "UPDATE `meja` SET `Status`='1' WHERE Nomor_Meja = ?;";
+            }else{
+                kueri = "UPDATE `meja` SET `Status`='0' WHERE Nomor_Meja = ?";
+            }
+            try {
+                PreparedStatement ps = con.prepareStatement(kueri);
+                ps.setInt(1, nomor);
+                int rowsAffected = ps.executeUpdate();
+                if (rowsAffected == 1) {                   
+                    JOptionPane.showMessageDialog(this, "Data Berhasil Terupdate");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Insert Data Failed");
+                }
+                ps.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
 
 
     /**
@@ -686,7 +713,7 @@ public class DisplaySWK extends javax.swing.JFrame {
         TabelEditMakanan = new javax.swing.JTable();
         btnEditMakanan = new javax.swing.JButton();
         btnHapusMakanan = new javax.swing.JButton();
-        btnUbahMakanan = new javax.swing.JButton();
+        btnSubmitMenu = new javax.swing.JButton();
         jLabel22 = new javax.swing.JLabel();
         jScrollPane12 = new javax.swing.JScrollPane();
         TabelEditMinuman = new javax.swing.JTable();
@@ -705,6 +732,7 @@ public class DisplaySWK extends javax.swing.JFrame {
         TBStatus = new javax.swing.JToggleButton();
         txtNamaStan = new javax.swing.JLabel();
         jButton5 = new javax.swing.JButton();
+        jButton7 = new javax.swing.JButton();
         PanePesanMakan = new javax.swing.JScrollPane();
         panelPesanan = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -737,8 +765,8 @@ public class DisplaySWK extends javax.swing.JFrame {
         ButtonHapusPesanan = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
-        TFNoTelp = new javax.swing.JTextField();
-        jTextField7 = new javax.swing.JTextField();
+        TFNoTelpCustomer = new javax.swing.JTextField();
+        TFNamaCustomer = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jSeparator5 = new javax.swing.JSeparator();
@@ -747,6 +775,7 @@ public class DisplaySWK extends javax.swing.JFrame {
         jLabel10 = new javax.swing.JLabel();
         TFTotalHarga = new javax.swing.JTextField();
         jButton6 = new javax.swing.JButton();
+        jButton8 = new javax.swing.JButton();
         btnReset = new javax.swing.JButton();
         TFCariStan = new javax.swing.JTextField();
         btnCariStan = new javax.swing.JButton();
@@ -887,6 +916,12 @@ public class DisplaySWK extends javax.swing.JFrame {
         jLabel30.setBackground(new java.awt.Color(10, 38, 71));
         jLabel30.setForeground(new java.awt.Color(60, 63, 65));
         jLabel30.setText("No Tlp :");
+
+        TFNama.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TFNamaActionPerformed(evt);
+            }
+        });
 
         TFNo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1097,41 +1132,37 @@ public class DisplaySWK extends javax.swing.JFrame {
         jPanel10Layout.setHorizontalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel10Layout.createSequentialGroup()
-                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(jPanel10Layout.createSequentialGroup()
-                            .addGap(513, 513, 513)
-                            .addComponent(jLabel21)
-                            .addGap(78, 78, 78))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel10Layout.createSequentialGroup()
-                            .addGap(375, 375, 375)
-                            .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(jLabel25)
-                                .addComponent(jLabel24))
-                            .addGap(18, 18, 18)
-                            .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(jPanel10Layout.createSequentialGroup()
-                                    .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(jLabel23)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(btnAdmin))
-                                .addComponent(TFEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(TFPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGap(0, 0, Short.MAX_VALUE)))
+                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(jPanel10Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jButton3)))
-                .addContainerGap(844, Short.MAX_VALUE))
+                        .addComponent(jLabel21)
+                        .addGap(53, 53, 53))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel10Layout.createSequentialGroup()
+                        .addGap(375, 375, 375)
+                        .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton3)
+                            .addGroup(jPanel10Layout.createSequentialGroup()
+                                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel25)
+                                    .addComponent(jLabel24))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel10Layout.createSequentialGroup()
+                                        .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jLabel23)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(btnAdmin))
+                                    .addComponent(TFEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(TFPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                .addContainerGap(869, Short.MAX_VALUE))
         );
         jPanel10Layout.setVerticalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel10Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(jButton3)
-                .addGap(109, 109, 109)
+                .addGap(153, 153, 153)
                 .addComponent(jLabel21)
-                .addGap(18, 18, 18)
+                .addGap(19, 19, 19)
                 .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(TFEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel24))
@@ -1144,7 +1175,9 @@ public class DisplaySWK extends javax.swing.JFrame {
                     .addComponent(btnLogin)
                     .addComponent(jLabel23)
                     .addComponent(btnAdmin))
-                .addContainerGap(780, Short.MAX_VALUE))
+                .addGap(88, 88, 88)
+                .addComponent(jButton3)
+                .addContainerGap(668, Short.MAX_VALUE))
         );
 
         PaneLoginSeller.setViewportView(jPanel10);
@@ -1281,10 +1314,10 @@ public class DisplaySWK extends javax.swing.JFrame {
             }
         });
 
-        btnUbahMakanan.setText("SUBMIT");
-        btnUbahMakanan.addActionListener(new java.awt.event.ActionListener() {
+        btnSubmitMenu.setText("SUBMIT");
+        btnSubmitMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnUbahMakananActionPerformed(evt);
+                btnSubmitMenuActionPerformed(evt);
             }
         });
 
@@ -1406,6 +1439,19 @@ public class DisplaySWK extends javax.swing.JFrame {
         txtNamaStan.setForeground(new java.awt.Color(255, 204, 0));
 
         jButton5.setText("RESET");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        jButton7.setBackground(new java.awt.Color(255, 102, 102));
+        jButton7.setText("Back to Login Page");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
         jPanel11.setLayout(jPanel11Layout);
@@ -1421,25 +1467,24 @@ public class DisplaySWK extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel11Layout.createSequentialGroup()
-                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(80, 80, 80)
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel11Layout.createSequentialGroup()
-                        .addGap(80, 80, 80)
-                        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel11Layout.createSequentialGroup()
-                                .addComponent(jLabel19)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtNamaStan))
-                            .addGroup(jPanel11Layout.createSequentialGroup()
-                                .addComponent(jLabel20)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(TBStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel36)
-                            .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jButton7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnSubmitMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton5))
                     .addGroup(jPanel11Layout.createSequentialGroup()
-                        .addGap(244, 244, 244)
-                        .addComponent(btnUbahMakanan, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton5)))
+                        .addComponent(jLabel19)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtNamaStan))
+                    .addGroup(jPanel11Layout.createSequentialGroup()
+                        .addComponent(jLabel20)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(TBStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel36)
+                    .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel11Layout.createSequentialGroup()
@@ -1489,8 +1534,9 @@ public class DisplaySWK extends javax.swing.JFrame {
                         .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnUbahMakanan)
-                            .addComponent(jButton5))
+                            .addComponent(btnSubmitMenu)
+                            .addComponent(jButton5)
+                            .addComponent(jButton7))
                         .addGap(0, 18, Short.MAX_VALUE)))
                 .addGap(19, 19, 19)
                 .addComponent(jScrollPane12, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1674,15 +1720,15 @@ public class DisplaySWK extends javax.swing.JFrame {
         jLabel11.setForeground(new java.awt.Color(255, 255, 255));
         jLabel11.setText("PESANAN");
 
-        TFNoTelp.addActionListener(new java.awt.event.ActionListener() {
+        TFNoTelpCustomer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                TFNoTelpActionPerformed(evt);
+                TFNoTelpCustomerActionPerformed(evt);
             }
         });
 
-        jTextField7.addActionListener(new java.awt.event.ActionListener() {
+        TFNamaCustomer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField7ActionPerformed(evt);
+                TFNamaCustomerActionPerformed(evt);
             }
         });
 
@@ -1721,6 +1767,14 @@ public class DisplaySWK extends javax.swing.JFrame {
             }
         });
 
+        jButton8.setBackground(new java.awt.Color(255, 102, 102));
+        jButton8.setText("Back to Login Page");
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -1753,13 +1807,14 @@ public class DisplaySWK extends javax.swing.JFrame {
                                         .addComponent(jLabel14))
                                     .addGap(18, 18, 18)
                                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(TFNoTelp, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
-                                        .addComponent(jTextField7)
+                                        .addComponent(TFNoTelpCustomer, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
+                                        .addComponent(TFNamaCustomer)
                                         .addComponent(TFNomorMeja, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addGroup(jPanel3Layout.createSequentialGroup()
                                     .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(TFTotalHarga, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(TFTotalHarga, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jButton8)))
                         .addGap(63, 63, 63))))
         );
         jPanel3Layout.setVerticalGroup(
@@ -1776,16 +1831,19 @@ public class DisplaySWK extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ButtonHapusPesanan))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(ButtonHapusPesanan)
+                            .addComponent(jButton8))
+                        .addContainerGap(54, Short.MAX_VALUE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(TFNamaCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel15))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(TFNoTelp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(TFNoTelpCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel14))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1798,8 +1856,8 @@ public class DisplaySWK extends javax.swing.JFrame {
                             .addComponent(jLabel10)
                             .addComponent(TFTotalHarga, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
-                        .addComponent(jButton6)))
-                .addContainerGap(54, Short.MAX_VALUE))
+                        .addComponent(jButton6)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         btnReset.setText("Reset");
@@ -2047,9 +2105,9 @@ public class DisplaySWK extends javax.swing.JFrame {
         System.out.println("berhasil upload transaksi");
     }//GEN-LAST:event_jButton6ActionPerformed
 
-    private void TFNoTelpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFNoTelpActionPerformed
+    private void TFNoTelpCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFNoTelpCustomerActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_TFNoTelpActionPerformed
+    }//GEN-LAST:event_TFNoTelpCustomerActionPerformed
 
     private void TFNomorMejaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFNomorMejaActionPerformed
         // TODO add your handling code here:
@@ -2122,9 +2180,9 @@ public class DisplaySWK extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnTampilkanMenuActionPerformed
 
-    private void jTextField7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField7ActionPerformed
+    private void TFNamaCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFNamaCustomerActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField7ActionPerformed
+    }//GEN-LAST:event_TFNamaCustomerActionPerformed
 
     private void tfCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfCariActionPerformed
         // TODO add your handling code here:
@@ -2161,7 +2219,7 @@ public class DisplaySWK extends javax.swing.JFrame {
         // TODO add your handling code here:
         RBJenisMinum.setSelected(true);
         fungsiEditMenuMinuman();
-        btnUbahMakanan.setText("Ubah");
+        btnSubmitMenu.setText("Ubah");
     }//GEN-LAST:event_btnEditMinumanActionPerformed
 
     private void TBStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TBStatusActionPerformed
@@ -2170,14 +2228,14 @@ public class DisplaySWK extends javax.swing.JFrame {
         radioButton();
     }//GEN-LAST:event_TBStatusActionPerformed
 
-    private void btnUbahMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUbahMakananActionPerformed
+    private void btnSubmitMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitMenuActionPerformed
         // TODO add your handling code here:
-        String tombol = btnUbahMakanan.getText();
+        String tombol = btnSubmitMenu.getText();
         editMenu(tombol);
         loadMenu(1);
         tampilMakanan();
         tampilMinuman();
-    }//GEN-LAST:event_btnUbahMakananActionPerformed
+    }//GEN-LAST:event_btnSubmitMenuActionPerformed
 
     private void btnHapusMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusMakananActionPerformed
         // TODO add your handling code here:
@@ -2187,7 +2245,7 @@ public class DisplaySWK extends javax.swing.JFrame {
         // TODO add your handling code here:
         RBJenisMakan.setSelected(true);
         fungsiEditMenuMakanan();
-        btnUbahMakanan.setText("Ubah");
+        btnSubmitMenu.setText("Ubah");
     }//GEN-LAST:event_btnEditMakananActionPerformed
 
     private void cbStatusMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbStatusMenuActionPerformed
@@ -2242,6 +2300,9 @@ public class DisplaySWK extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+         int barisTerpilih = jtBooking.getSelectedRow();
+        TFMeja.setText(modelMeja.getValueAt(barisTerpilih, 0).toString()); 
+        TFKursi.setText(modelMeja.getValueAt(barisTerpilih, 1).toString());
         
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -2260,18 +2321,54 @@ public class DisplaySWK extends javax.swing.JFrame {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
         String booking = cbPesanan.getSelectedItem().toString();
-
-        if (booking.equals("On Site"))
-        {
-            JOptionPane.showMessageDialog(this, "");
-
-        }else if(booking.equals("Take Away"))
-        {
-            JOptionPane.showMessageDialog(this, "Silahkan Tunggu Pesanan Anda");
+        String nama = TFNama.getText();
+        String no =TFNo.getText();
+        long noMeja = Long.parseLong(no);
+        
+        if(nama.trim().isEmpty() || no.trim().isEmpty() ){
+            JOptionPane.showMessageDialog(this, "Mohon Untuk Mengisi Nama dan Nomor Telefon"); 
+        }else{
+            if (booking.equals("On Site")){              
+                customer = new Customer(nama, noMeja);
+                bookingMeja(1);
+                TFNamaCustomer.setText(nama);
+                TFNoTelpCustomer.setText(no);
+                jTabbedPane.setSelectedIndex(4);
+                
+            }else if(booking.equals("Take Away")){
+                customer = new Customer(nama, noMeja);
+                JOptionPane.showMessageDialog(this, "Silahkan memesan makanan");
+                TFNamaCustomer.setText(nama);
+                TFNoTelpCustomer.setText(no);
+                jTabbedPane.setSelectedIndex(4);
+            }
         }
 
-        jTabbedPane.setSelectedIndex(4);
+        
+        
+        
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+        tfNamaMenu.setText("");
+        tfHargaMenu.setText("");
+        btnSubmitMenu.setText("Submit");
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        // TODO add your handling code here:
+        jTabbedPane.setSelectedIndex(0);
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        // TODO add your handling code here:
+        jTabbedPane.setSelectedIndex(0);
+    }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void TFNamaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFNamaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TFNamaActionPerformed
 
 
     
@@ -2302,8 +2399,9 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JTextField TFKursi;
     private javax.swing.JTextField TFMeja;
     private javax.swing.JTextField TFNama;
+    private javax.swing.JTextField TFNamaCustomer;
     private javax.swing.JTextField TFNo;
-    private javax.swing.JTextField TFNoTelp;
+    private javax.swing.JTextField TFNoTelpCustomer;
     private javax.swing.JTextField TFNomorMeja;
     private javax.swing.JTextField TFPassword;
     private javax.swing.JTextField TFTotalHarga;
@@ -2326,8 +2424,8 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JButton btnLanjut;
     private javax.swing.JButton btnLogin;
     private javax.swing.JButton btnReset;
+    private javax.swing.JButton btnSubmitMenu;
     private javax.swing.JButton btnTampilkanMenu;
-    private javax.swing.JButton btnUbahMakanan;
     private javax.swing.JComboBox<String> cbPesanan;
     private javax.swing.JComboBox<String> cbPilihan;
     private javax.swing.JComboBox<String> cbStatusMenu;
@@ -2337,6 +2435,8 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButton8;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -2401,7 +2501,6 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
     private javax.swing.JTabbedPane jTabbedPane;
-    private javax.swing.JTextField jTextField7;
     private javax.swing.JTable jtBooking;
     private javax.swing.JPanel panelLogin;
     private javax.swing.JPanel panelPesanan;
