@@ -41,4 +41,8 @@ public class Stan {
         return stts;
     }
     
+    void setStatus(int status){
+        this.status = status;
+    }
+    
 }
