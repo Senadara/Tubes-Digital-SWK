@@ -683,6 +683,7 @@ public class DisplaySWK extends javax.swing.JFrame {
         cbPesanan = new javax.swing.JComboBox<>();
         jLabel37 = new javax.swing.JLabel();
         jButton4 = new javax.swing.JButton();
+        jButton9 = new javax.swing.JButton();
         PaneLoginSeller = new javax.swing.JScrollPane();
         jPanel10 = new javax.swing.JPanel();
         jLabel21 = new javax.swing.JLabel();
@@ -1019,6 +1020,13 @@ public class DisplaySWK extends javax.swing.JFrame {
             }
         });
 
+        jButton9.setText("Reset");
+        jButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton9ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -1047,6 +1055,8 @@ public class DisplaySWK extends javax.swing.JFrame {
                                 .addGroup(jPanel1Layout.createSequentialGroup()
                                     .addComponent(jButton2)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jButton9)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addComponent(jButton4))
                                 .addComponent(jPanel12, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(373, Short.MAX_VALUE))
@@ -1071,7 +1081,8 @@ public class DisplaySWK extends javax.swing.JFrame {
                 .addGap(6, 6, 6)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton2)
-                    .addComponent(jButton4))
+                    .addComponent(jButton4)
+                    .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(489, Short.MAX_VALUE))
         );
 
@@ -1833,8 +1844,7 @@ public class DisplaySWK extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(ButtonHapusPesanan)
-                            .addComponent(jButton8))
-                        .addContainerGap(54, Short.MAX_VALUE))
+                            .addComponent(jButton8)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1856,8 +1866,8 @@ public class DisplaySWK extends javax.swing.JFrame {
                             .addComponent(jLabel10)
                             .addComponent(TFTotalHarga, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
-                        .addComponent(jButton6)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(jButton6)))
+                .addContainerGap(54, Short.MAX_VALUE))
         );
 
         btnReset.setText("Reset");
@@ -2021,7 +2031,7 @@ public class DisplaySWK extends javax.swing.JFrame {
 
         jTabbedPane.addTab("tab4", PanePesanMakan);
 
-        jPanel4.add(jTabbedPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1310, 1030));
+        jPanel4.add(jTabbedPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1310, 990));
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -2044,7 +2054,9 @@ public class DisplaySWK extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 985, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
@@ -2266,13 +2278,16 @@ public class DisplaySWK extends javax.swing.JFrame {
         String pass = TFPassword.getText();
         login(email,pass);
         if (seller != null){
+            txtNamaStan.setText(seller.getNama());
             jTabbedPane.setSelectedIndex(3);
+            loadMenu(1);
+            tampilMakanan();
+            tampilMinuman();
+            statusStan();
+        }else{
+            
         }
-        txtNamaStan.setText(seller.getNama());
-        loadMenu(1);
-        tampilMakanan();
-        tampilMinuman();
-        statusStan();
+        
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void btnAdminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdminActionPerformed
@@ -2370,6 +2385,14 @@ public class DisplaySWK extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_TFNamaActionPerformed
 
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+        // TODO add your handling code here:
+        TFNama.setText("");
+        TFNo.setText("");
+        TFKursi.setText("");
+        TFMeja.setText("");
+    }//GEN-LAST:event_jButton9ActionPerformed
+
 
     
     /**
@@ -2437,6 +2460,7 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
+    private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
