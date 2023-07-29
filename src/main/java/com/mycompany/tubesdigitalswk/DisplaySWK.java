@@ -866,10 +866,12 @@ private String getNewIDTransaksi() {
         }
     }
     
-     private static class Order{
+     public class Order{
         private String namaStan;
         private String namaPesanan;
         private int status;
+        
+        //Order()
 
         public String getNamaStan() {
             return namaStan;

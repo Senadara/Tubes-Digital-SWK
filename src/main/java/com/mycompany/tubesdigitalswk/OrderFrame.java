@@ -8,78 +8,62 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-public class Order extends JFrame {
+public class OrderFrame extends JFrame {
 
     private Connection con;
-    DefaultTableModel modelOrder = new DefaultTableModel();
-    ArrayList<Order> od = new ArrayList<>(); 
+    private DefaultTableModel modelOrder = new DefaultTableModel();
 
-    public Order() {
-        initComponents();
-        loadKolomOrder();
-        con = Koneksi.bukaKoneksi();
-        setLocationRelativeTo(null);
-        reset();
-    }
 
-    private void initComponents() {
-        // Add initialization for GUI components if necessary
-    }
-
+  
     private void loadKolomOrder() {
         modelOrder.addColumn("Stan");
         modelOrder.addColumn("Pesanan");
         modelOrder.addColumn("Status");
-        jtOrder.setModel(modelOrder);
+        tabelOrder.setModel(modelOrder);
     }
 
-    private void loadDetailOrder() {
+     private void loadOrderDetail() {
         if (con != null) {
-            od = new ArrayList<>();
             String kueri = "SELECT s.Nama_Stan, m.Nama, m.Status FROM stan s INNER JOIN menu m ON m.ID_Stan = s.ID_Stan;";
             try {
                 PreparedStatement ps = con.prepareStatement(kueri);
                 ResultSet rs = ps.executeQuery();
-                DefaultTableModel modelOrder = (DefaultTableModel) jtOrder.getModel();
                 modelOrder.setRowCount(0);
+
                 while (rs.next()) {
                     String namaStan = rs.getString("Nama_Stan");
                     String namaPesanan = rs.getString("Nama");
                     int status = rs.getInt("Status");
                     modelOrder.addRow(new Object[]{namaStan, namaPesanan, status});
-                    
-                    DisplaySWK order = new DisplaySWK(namaStan, namaPesanan, status);
-                    od.add(DisplaySWK)
                 }
                 rs.close();
                 ps.close();
             } catch (SQLException ex) {
-                Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(OrderFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
 
-    private void tampilOrder() {
-        DefaultTableModel modelOrder = (DefaultTableModel) jtOrder.getModel();
-        modelOrder.setRowCount(0);
-        for (Order o : od) {
-            modelOrder.addRow(new Object[]{o.getNamaStan(), o.getNamaPesanan(), o.getStatus()});
-        }
+      public OrderFrame() {
+        initComponents();
+        loadKolomOrder();
+        con = Koneksi.bukaKoneksi();
+        setLocationRelativeTo(null);
+        loadOrderDetail();
+       
     }
 
-    public void reset() {
-        loadDetailOrder();
-        tampilOrder();
-    }
+     
     
-    
+
+  
+
 
 
     /**
@@ -93,7 +77,7 @@ public class Order extends JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jtOrder = new javax.swing.JTable();
+        tabelOrder = new javax.swing.JTable();
         BtnKonfirmasi = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
@@ -105,7 +89,7 @@ public class Order extends JFrame {
 
         jPanel1.setBackground(new java.awt.Color(0, 129, 138));
 
-        jtOrder.setModel(new javax.swing.table.DefaultTableModel(
+        tabelOrder.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},
                 {null, null, null},
@@ -116,8 +100,8 @@ public class Order extends JFrame {
                 "Stan", "Pesanan", "Status"
             }
         ));
-        jtOrder.setSelectionBackground(new java.awt.Color(216, 146, 22));
-        jScrollPane1.setViewportView(jtOrder);
+        tabelOrder.setSelectionBackground(new java.awt.Color(216, 146, 22));
+        jScrollPane1.setViewportView(tabelOrder);
 
         BtnKonfirmasi.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         BtnKonfirmasi.setText("Konfirmasi");
@@ -245,20 +229,20 @@ public class Order extends JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Order.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(OrderFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Order.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(OrderFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Order.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(OrderFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Order.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(OrderFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Order().setVisible(true);
+                new OrderFrame().setVisible(true);
             }
         });
     }
@@ -270,7 +254,7 @@ public class Order extends JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jtOrder;
+    private javax.swing.JTable tabelOrder;
     private javax.swing.JTextField tfNamaOrder;
     private javax.swing.JTextField tfNoHpOrder;
     // End of variables declaration//GEN-END:variables
