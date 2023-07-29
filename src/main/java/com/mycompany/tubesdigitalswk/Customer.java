@@ -10,6 +10,7 @@ package com.mycompany.tubesdigitalswk;
  */
 public class Customer {
     private String nama, noTelp;
+    int idCustomer;
     
     Customer(String nama, String noTelp){
         this.nama = nama;
@@ -24,6 +25,12 @@ public class Customer {
         return noTelp;
     }
     
+    public void setId(int idCustomer){
+        this.idCustomer = idCustomer;
+    }
     
+    public int getId(){
+        return idCustomer;
+    }
     
 }
