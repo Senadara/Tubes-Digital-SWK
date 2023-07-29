@@ -205,6 +205,8 @@ public class DisplaySWK extends javax.swing.JFrame {
                 Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
             }
             }
+        }else{
+            JOptionPane.showMessageDialog(this, "Koneksi Ke Database Gagal");
         }
     }
 
@@ -230,6 +232,8 @@ public class DisplaySWK extends javax.swing.JFrame {
             }catch(SQLException ex){
                 Logger.getLogger(PilihanMakan.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }else{
+            JOptionPane.showMessageDialog(this, "Koneksi Ke Database Gagal");
         }
     }
     
@@ -323,6 +327,7 @@ public class DisplaySWK extends javax.swing.JFrame {
                     Stan stan = new Stan(id, nomor, nama, status);
                     hasilPencarian.add(stan);
                 }
+               
                 rs.close();
                 ps.close();
 
@@ -334,6 +339,8 @@ public class DisplaySWK extends javax.swing.JFrame {
             } catch (SQLException ex) {
                 Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }else{
+            JOptionPane.showMessageDialog(this, "Koneksi Ke Database Gagal");
         }
     }
 
@@ -412,6 +419,8 @@ public class DisplaySWK extends javax.swing.JFrame {
                     Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+        }else{
+            JOptionPane.showMessageDialog(this, "Koneksi Ke Database Gagal");
         }
     }
     
@@ -481,7 +490,9 @@ private String getNewIDTransaksi() {
         }
 
         return newID;
-    }
+    }else{
+            JOptionPane.showMessageDialog(this, "Koneksi Ke Database Gagal");
+        }
     
     return "1";
 }
@@ -598,6 +609,8 @@ private String getNewIDTransaksi() {
             } catch (SQLException ex) {
                 Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }else{
+            JOptionPane.showMessageDialog(this, "Koneksi Ke Database Gagal");
         }
     }
     
@@ -662,6 +675,8 @@ private String getNewIDTransaksi() {
                 
                 JOptionPane.showMessageDialog(this, "Email atau Password tidak tersedia atau salah");
             }
+        }else{
+            JOptionPane.showMessageDialog(this, "Koneksi Ke Database Gagal");
         }
 
     }
@@ -708,7 +723,9 @@ private String getNewIDTransaksi() {
                 Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-    }
+    }else{
+            JOptionPane.showMessageDialog(this, "Koneksi Ke Database Gagal");
+        }
     }
     
     private void bookingMeja(int statusBooking){
@@ -733,6 +750,8 @@ private String getNewIDTransaksi() {
             } catch (SQLException ex) {
                 Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }else{
+            JOptionPane.showMessageDialog(this, "Koneksi Ke Database Gagal");
         }
     }
     
@@ -770,6 +789,8 @@ private String getNewIDTransaksi() {
             }catch (SQLException ex) {
                 Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
             } 
+        }else{
+            JOptionPane.showMessageDialog(this, "Koneksi Ke Database Gagal");
         }
     }
 
@@ -842,7 +863,9 @@ private String getNewIDTransaksi() {
             Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
         }      
         }
-    }
+    }else{
+            JOptionPane.showMessageDialog(this, "Koneksi Ke Database Gagal");
+        }
     }
     
     
@@ -863,29 +886,10 @@ private String getNewIDTransaksi() {
             } catch (SQLException ex) {
             Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
         }
+        }else{
+            JOptionPane.showMessageDialog(this, "Koneksi Ke Database Gagal");
         }
     }
-    
-     public class Order{
-        private String namaStan;
-        private String namaPesanan;
-        private int status;
-        
-        //Order()
-
-        public String getNamaStan() {
-            return namaStan;
-        }
-
-        public String getNamaPesanan() {
-            return namaPesanan;
-        }
-
-        public int getStatus() {
-            return status;
-        }
-    }
-
 
     /**
      * This method is called from within the constructor to initialize the form.
