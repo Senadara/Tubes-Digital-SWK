@@ -52,6 +52,8 @@ public class DisplaySWK extends javax.swing.JFrame {
     private ArrayList<Keranjang> krnjg = new ArrayList<>();
     private ArrayList<Booking> bm = new ArrayList<>();
     
+    public ArrayList<StatusCooking> sc = new ArrayList<>();
+    
     private float tHarga = 0;
     private int idMenu;
 
@@ -772,7 +774,7 @@ private String getNewIDTransaksi() {
     }
 
     private void updateTablePesanan(int tampilan, String idTransaksi) {
-       
+       ArrayList<StatusCooking> scking = new ArrayList<>();
             if (con != null) {
                 if(tampilan == 1){
                 String kueri = "SELECT c.Nama_Customer, p.ID_Meja, m.Nama, p.Jumlah, p.Total_Harga, p.catatan , p.Jam_Pemesanan, p.status FROM pesanan p INNER JOIN menu m ON p.ID_Menu = m.ID_Menu INNER JOIN customer c ON p.ID_Customer = c.ID_Customer WHERE m.ID_Stan = ? AND p.status = 0 ORDER BY Jam_Pemesanan ASC;";
@@ -795,6 +797,9 @@ private String getNewIDTransaksi() {
 
                     // Tambahkan data ke tabel pesanan pada GUI
                     modelPesanan.addRow(new Object[]{customer, idMeja, makanan, jumlah, totalHarga, catatan, jamPemesanan, status});
+                    StatusCooking cooking = new StatusCooking(customer, makanan, jumlah, catatan, status);
+                    scking.add(cooking);  
+                    sc=scking;                 
                 }
 
                 rs.close();
@@ -825,6 +830,9 @@ private String getNewIDTransaksi() {
 
                     // Tambahkan data ke tabel pesanan pada GUI
                     modelPesanan.addRow(new Object[]{customer, idMeja, makanan, jumlah, totalHarga, catatan, jamPemesanan, status});
+                    StatusCooking cooking = new StatusCooking(customer, makanan, jumlah, catatan, status);
+                    scking.add(cooking);  
+                    sc=scking;
                 }
 
                 rs.close();
@@ -1337,10 +1345,11 @@ private String getNewIDTransaksi() {
                 .addGap(8, 8, 8)
                 .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(6, 6, 6)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
-                    .addComponent(jButton4)
-                    .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton2)
+                        .addComponent(jButton4)))
                 .addContainerGap(489, Short.MAX_VALUE))
         );
 
@@ -2737,6 +2746,8 @@ private String getNewIDTransaksi() {
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
         // TODO add your handling code here:
+        ProsesPesanan pp = new ProsesPesanan(sc);
+        pp.setVisible(true);
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed

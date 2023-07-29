@@ -4,83 +4,30 @@
  */
 package com.mycompany.tubesdigitalswk;
 
+import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author putra
  */
 public class ProsesPesanan extends javax.swing.JFrame {
+    DefaultTableModel model;
+    
+    
+    private void loadTabel(ArrayList<StatusCooking> cooking){
+        model = (DefaultTableModel) TabelCheckList.getModel();
+        for (StatusCooking sc : cooking) {
+        model.addRow(new Object[]{sc.getNamaCustomer(), sc.getNamaMakanan(), sc.getJumlah(), sc.getCatatan(), sc.getStatus()});
+        }
+    }
 
     /**
      * Creates new form ProsesPesanan
      */
-    public ProsesPesanan() {
+    public ProsesPesanan(ArrayList<StatusCooking> cooking) {
         initComponents();
-    }
-    
-    private void updateTablePesanan(int tampilan, String idTransaksi) {
-       
-            if (con != null) {
-                if(tampilan == 1){
-                String kueri = "SELECT c.Nama_Customer, p.ID_Meja, m.Nama, p.Jumlah, p.Total_Harga, p.catatan , p.Jam_Pemesanan, p.status FROM pesanan p INNER JOIN menu m ON p.ID_Menu = m.ID_Menu INNER JOIN customer c ON p.ID_Customer = c.ID_Customer WHERE m.ID_Stan = ? AND p.status = 0 ORDER BY Jam_Pemesanan ASC;";
-                try {
-                PreparedStatement ps = con.prepareStatement(kueri);
-                ps.setInt(1, seller.getID());
-                ResultSet rs = ps.executeQuery();
-
-                modelPesanan.setRowCount(0);
-
-                while (rs.next()) {
-                    String customer = rs.getString("Nama_Customer");
-                    int idMeja = rs.getInt("ID_Meja");
-                    String makanan = rs.getString("Nama");
-                    int jumlah = rs.getInt("Jumlah");
-                    int totalHarga = rs.getInt("Total_Harga");
-                    Time jamPemesanan = rs.getTime("Jam_Pemesanan");
-                    String catatan = rs.getString("Catatan");
-                    int status = rs.getInt("status");
-
-                    // Tambahkan data ke tabel pesanan pada GUI
-                    modelPesanan.addRow(new Object[]{customer, idMeja, makanan, jumlah, totalHarga, catatan, jamPemesanan, status});
-                }
-
-                rs.close();
-                ps.close();
-            
-        } catch (SQLException ex) {
-            Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        }else{
-              String kueri = "SELECT c.Nama_Customer, p.ID_Meja, m.Nama, p.Jumlah, p.Total_Harga, p.catatan , p.Jam_Pemesanan, p.status,p.ID_Transaksi FROM pesanan p INNER JOIN menu m ON p.ID_Menu = m.ID_Menu INNER JOIN customer c ON p.ID_Customer = c.ID_Customer WHERE m.ID_Stan = ? AND p.status = 0 AND p.ID_Transaksi = ? ORDER BY Jam_Pemesanan ASC;";
-                try {
-                PreparedStatement ps = con.prepareStatement(kueri);
-                ps.setInt(1, seller.getID());
-                ps.setString(2, idTransaksi);
-                ResultSet rs = ps.executeQuery();
-
-                modelPesanan.setRowCount(0);
-
-                while (rs.next()) {
-                    String customer = rs.getString("Nama_Customer");
-                    int idMeja = rs.getInt("ID_Meja");
-                    String makanan = rs.getString("Nama");
-                    int jumlah = rs.getInt("Jumlah");
-                    int totalHarga = rs.getInt("Total_Harga");
-                    Time jamPemesanan = rs.getTime("Jam_Pemesanan");
-                    String catatan = rs.getString("Catatan");
-                    int status = rs.getInt("status");
-
-                    // Tambahkan data ke tabel pesanan pada GUI
-                    modelPesanan.addRow(new Object[]{customer, idMeja, makanan, jumlah, totalHarga, catatan, jamPemesanan, status});
-                }
-
-                rs.close();
-                ps.close();
-            
-        } catch (SQLException ex) {
-            Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
-        }      
-        }
-    }
+        loadTabel(cooking);
     }
 
     /**
@@ -99,6 +46,11 @@ public class ProsesPesanan extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jPanel1.setBackground(new java.awt.Color(0, 129, 138));
 
@@ -107,14 +59,14 @@ public class ProsesPesanan extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Nama Pemesan", "Nama Makanan", "Jumlah Pesanan", "Status"
+                "Nama Pemesan", "Nama Makanan", "Jumlah Pesanan", "Catatan", "Status"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class
+                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, true
+                false, false, false, true, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -127,8 +79,8 @@ public class ProsesPesanan extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(TabelCheckList);
         if (TabelCheckList.getColumnModel().getColumnCount() > 0) {
-            TabelCheckList.getColumnModel().getColumn(3).setPreferredWidth(20);
-            TabelCheckList.getColumnModel().getColumn(3).setMaxWidth(20);
+            TabelCheckList.getColumnModel().getColumn(4).setPreferredWidth(20);
+            TabelCheckList.getColumnModel().getColumn(4).setMaxWidth(20);
         }
 
         jLabel28.setFont(new java.awt.Font("Trebuchet MS", 1, 24)); // NOI18N
@@ -152,19 +104,18 @@ public class ProsesPesanan extends javax.swing.JFrame {
                         .addComponent(jButton1)
                         .addGroup(jPanel1Layout.createSequentialGroup()
                             .addGap(52, 52, 52)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(1, 1, 1)))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 642, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(172, 172, 172)
+                        .addGap(271, 271, 271)
                         .addComponent(jLabel28)))
-                .addContainerGap(52, Short.MAX_VALUE))
+                .addContainerGap(60, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(21, 21, 21)
+                .addGap(15, 15, 15)
                 .addComponent(jLabel28)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
@@ -175,7 +126,9 @@ public class ProsesPesanan extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -189,40 +142,16 @@ public class ProsesPesanan extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+        this.setVisible(false);
+    }//GEN-LAST:event_formWindowClosing
+
+    
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ProsesPesanan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ProsesPesanan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ProsesPesanan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ProsesPesanan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ProsesPesanan().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable TabelCheckList;
