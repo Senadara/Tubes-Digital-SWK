@@ -4,18 +4,83 @@
  */
 package com.mycompany.tubesdigitalswk;
 
-/**
- *
- * @author DEO
- */
-public class Order extends javax.swing.JFrame {
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFrame;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
-    /**
-     * Creates new form Order
-     */
+public class Order extends JFrame {
+
+    private Connection con;
+    DefaultTableModel modelOrder = new DefaultTableModel();
+    ArrayList<Order> od = new ArrayList<>(); 
+
     public Order() {
         initComponents();
+        loadKolomOrder();
+        con = Koneksi.bukaKoneksi();
+        setLocationRelativeTo(null);
+        reset();
     }
+
+    private void initComponents() {
+        // Add initialization for GUI components if necessary
+    }
+
+    private void loadKolomOrder() {
+        modelOrder.addColumn("Stan");
+        modelOrder.addColumn("Pesanan");
+        modelOrder.addColumn("Status");
+        jtOrder.setModel(modelOrder);
+    }
+
+    private void loadDetailOrder() {
+        if (con != null) {
+            od = new ArrayList<>();
+            String kueri = "SELECT s.Nama_Stan, m.Nama, m.Status FROM stan s INNER JOIN menu m ON m.ID_Stan = s.ID_Stan;";
+            try {
+                PreparedStatement ps = con.prepareStatement(kueri);
+                ResultSet rs = ps.executeQuery();
+                DefaultTableModel modelOrder = (DefaultTableModel) jtOrder.getModel();
+                modelOrder.setRowCount(0);
+                while (rs.next()) {
+                    String namaStan = rs.getString("Nama_Stan");
+                    String namaPesanan = rs.getString("Nama");
+                    int status = rs.getInt("Status");
+                    modelOrder.addRow(new Object[]{namaStan, namaPesanan, status});
+                    
+                    DisplaySWK order = new DisplaySWK(namaStan, namaPesanan, status);
+                    od.add(DisplaySWK)
+                }
+                rs.close();
+                ps.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    private void tampilOrder() {
+        DefaultTableModel modelOrder = (DefaultTableModel) jtOrder.getModel();
+        modelOrder.setRowCount(0);
+        for (Order o : od) {
+            modelOrder.addRow(new Object[]{o.getNamaStan(), o.getNamaPesanan(), o.getStatus()});
+        }
+    }
+
+    public void reset() {
+        loadDetailOrder();
+        tampilOrder();
+    }
+    
+    
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -28,40 +93,61 @@ public class Order extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jtCekOrder = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
+        jtOrder = new javax.swing.JTable();
+        BtnKonfirmasi = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        tfNoHpOrder = new javax.swing.JTextField();
+        tfNamaOrder = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(0, 129, 138));
 
-        jtCekOrder.setModel(new javax.swing.table.DefaultTableModel(
+        jtOrder.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "ID Pesanan", "Nama", "Yang di Order", "Status"
+                "Stan", "Pesanan", "Status"
             }
         ));
-        jScrollPane1.setViewportView(jtCekOrder);
+        jtOrder.setSelectionBackground(new java.awt.Color(216, 146, 22));
+        jScrollPane1.setViewportView(jtOrder);
 
-        jButton1.setText("OK");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        BtnKonfirmasi.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        BtnKonfirmasi.setText("Konfirmasi");
+        BtnKonfirmasi.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                BtnKonfirmasiActionPerformed(evt);
             }
         });
 
         jLabel2.setFont(new java.awt.Font("Trebuchet MS", 1, 24)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(216, 146, 22));
-        jLabel2.setText("CEK PESANAN");
+        jLabel2.setText("DETAIL PESANAN");
 
-        jLabel3.setText("PUKIMAI");
+        jLabel1.setFont(new java.awt.Font("Trebuchet MS", 1, 24)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("Nama");
+
+        jLabel3.setFont(new java.awt.Font("Trebuchet MS", 1, 24)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setText("No Hp");
+
+        tfNoHpOrder.setForeground(new java.awt.Color(216, 146, 22));
+        tfNoHpOrder.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(216, 146, 22)));
+        tfNoHpOrder.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tfNoHpOrderActionPerformed(evt);
+            }
+        });
+
+        tfNamaOrder.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(216, 146, 22)));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -69,31 +155,49 @@ public class Order extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addGap(352, 352, 352))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(BtnKonfirmasi)
+                        .addGap(352, 352, 352))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(284, 284, 284))))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(32, 32, 32)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 718, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(38, Short.MAX_VALUE))
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(315, 315, 315)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel3)
-                .addGap(82, 82, 82))
+                .addGap(35, 35, 35)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel3))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(tfNamaOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(tfNoHpOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 718, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(35, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(50, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jButton1)
-                .addGap(30, 30, 30))
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addGap(63, 63, 63)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(4, 4, 4)
+                        .addComponent(tfNamaOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel1))
+                .addGap(28, 28, 28)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3)
+                    .addComponent(tfNoHpOrder))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(BtnKonfirmasi)
+                .addGap(71, 71, 71))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -109,16 +213,20 @@ public class Order extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 550, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(77, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void BtnKonfirmasiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnKonfirmasiActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_BtnKonfirmasiActionPerformed
+
+    private void tfNoHpOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfNoHpOrderActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tfNoHpOrderActionPerformed
 
     /**
      * @param args the command line arguments
@@ -156,11 +264,14 @@ public class Order extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton BtnKonfirmasi;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jtCekOrder;
+    private javax.swing.JTable jtOrder;
+    private javax.swing.JTextField tfNamaOrder;
+    private javax.swing.JTextField tfNoHpOrder;
     // End of variables declaration//GEN-END:variables
 }

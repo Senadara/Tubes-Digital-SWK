@@ -857,6 +857,24 @@ private String getNewIDTransaksi() {
         }
         }
     }
+    
+     private static class Order{
+        private String namaStan;
+        private String namaPesanan;
+        private int status;
+
+        public String getNamaStan() {
+            return namaStan;
+        }
+
+        public String getNamaPesanan() {
+            return namaPesanan;
+        }
+
+        public int getStatus() {
+            return status;
+        }
+    }
 
 
     /**
