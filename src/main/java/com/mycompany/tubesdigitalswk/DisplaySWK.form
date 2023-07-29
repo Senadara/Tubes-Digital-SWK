@@ -377,7 +377,6 @@
                                   </Group>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                      <Component id="TFMeja" min="-2" pref="99" max="-2" attributes="0"/>
                                       <Component id="TFNama" pref="408" max="32767" attributes="0"/>
                                       <Component id="TFNo" max="32767" attributes="0"/>
                                       <Group type="102" alignment="0" attributes="0">
@@ -386,6 +385,13 @@
                                           <Component id="jLabel12" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="cbPesanan" max="32767" attributes="0"/>
+                                      </Group>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Component id="TFMeja" min="-2" pref="73" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jLabel40" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="TFNoMeja" min="-2" pref="73" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                                   <EmptySpace pref="55" max="32767" attributes="0"/>
@@ -416,8 +422,10 @@
                                   <Group type="103" groupAlignment="3" attributes="0">
                                       <Component id="TFMeja" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="jLabel39" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="jLabel40" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="TFNoMeja" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace pref="9" max="32767" attributes="0"/>
+                                  <EmptySpace pref="16" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -484,7 +492,7 @@
                             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                               <Color blue="41" green="3f" red="3c" type="rgb"/>
                             </Property>
-                            <Property name="text" type="java.lang.String" value="No Meja :"/>
+                            <Property name="text" type="java.lang.String" value="ID Meja :"/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JLabel" name="jLabel12">
@@ -519,6 +527,22 @@
                           <AuxValues>
                             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
                           </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="jLabel40">
+                          <Properties>
+                            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                              <Color blue="47" green="26" red="a" type="rgb"/>
+                            </Property>
+                            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                              <Color blue="41" green="3f" red="3c" type="rgb"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="No Meja :"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JTextField" name="TFNoMeja">
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="TFNoMejaActionPerformed"/>
+                          </Events>
                         </Component>
                       </SubComponents>
                     </Container>

@@ -9,10 +9,9 @@ package com.mycompany.tubesdigitalswk;
  * @author putra
  */
 public class Customer {
-    private String nama;
-    private long noTelp;
+    private String nama, noTelp;
     
-    Customer(String nama, long noTelp){
+    Customer(String nama, String noTelp){
         this.nama = nama;
         this.noTelp = noTelp;
     }
@@ -21,7 +20,7 @@ public class Customer {
         return nama;
     }
     
-    public long noTelp(){
+    public String getNoTelp(){
         return noTelp;
     }
     

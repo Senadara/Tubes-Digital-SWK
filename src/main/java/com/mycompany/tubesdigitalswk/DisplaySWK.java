@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,6 +37,7 @@ public class DisplaySWK extends javax.swing.JFrame {
     private ButtonGroup buttonGroup = new ButtonGroup();
     private Customer customer;
     private Stan seller;
+    private Meja meja;
     
     private ArrayList<Stan> stn = new ArrayList<>();
     private ArrayList<Makanan> mkn = new ArrayList<>();
@@ -393,50 +395,112 @@ public class DisplaySWK extends javax.swing.JFrame {
             }
         }
     }
-
-    private int getIdTransaksi() {
-        int nomorUrutTerakhir = 0;
-        int tahunSaatIni = LocalDate.now().getYear();
-        String kueri = "SELECT MAX(ID_Pesanan) FROM pesanan WHERE YEAR(tanggal_transaksi) = ?";
-        try {
-            PreparedStatement ps = con.prepareStatement(kueri);
-            ps.setInt(1, tahunSaatIni);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                nomorUrutTerakhir = rs.getInt(1);
-            }
-        } catch (SQLException e) {
-            System.err.println("Error saat mendapatkan nomor urut terakhir: " + e.getMessage());
+    
+    private int cekCustomer(){
+    try{
+        String nomorHandphone = customer.getNoTelp();
+        String kueri = "SELECT No_Telp, ID_Customer FROM customer WHERE No_Telp = ?";
+        PreparedStatement psSelect = con.prepareStatement(kueri);
+        psSelect.setString(1, nomorHandphone);
+        ResultSet rs = psSelect.executeQuery();
+        int idCustomer = 0;
+        
+        if (rs.next()) {
+        idCustomer = rs.getInt("ID_Customer");
         }
-        return nomorUrutTerakhir;
+        rs.close();
+        psSelect.close();
+        
+        if (idCustomer != 0){
+        return idCustomer;
+        } else {
+            kueri = "INSERT INTO `customer`(`Nama_Customer`, `No_Telp`) VALUES (?,?);";
+            try{
+            PreparedStatement ps = con.prepareStatement(kueri);
+            ps.setString(1, customer.getNama());
+            ps.setString(2, customer.getNoTelp());
+            ps.executeUpdate();            
+            ps.close();
+            
+            //Memanggil Funsinya sendiri
+            cekCustomer();
+        }catch (SQLException ex) {
+            Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
+        }       
+        }        
+    }catch (SQLException e) {
+            System.err.println("Error saat mendapatkan nomor urut terakhir: " + e.getMessage());
     }
-
-    // Metode untuk membuat ID transaksi berdasarkan tahun saat ini dan nomor urut terakhir
-    public String buatIDTransaksi() {
-        int nomorUrutTerakhir = getIdTransaksi();
-        int tahunSaatIni = LocalDate.now().getYear();
-        int nomorUrutBaru = nomorUrutTerakhir + 1;
-        String idTransaksi = tahunSaatIni + "" + nomorUrutBaru;
-        return idTransaksi;
+    return 1;
     }
+    
+    
+    private String getNewIDTransaksi() {
+        if(con != null){
+        int currentYear = LocalDate.now().getYear();
+        String newID = currentYear + "_" + 1;
+        String kueri = "SELECT COUNT(ID_Transakasi) AS Total_Transaksi,Tanggal_Pesanan FROM transaksi WHERE DATE_FORMAT(Tanggal_Pesanan, '%Y') = ?;";
+        try {          
+            PreparedStatement ps = con.prepareStatement(kueri);
+            ps.setInt(1, currentYear);
+            ResultSet rs = ps.executeQuery();
+                int maxID = Integer.parseInt(rs.getString("Total_Transaksi"));
+                System.out.println(maxID);
+                if (!rs.wasNull()) {
+                    maxID =+ 1;
+                    newID = currentYear + "_" + maxID;
+                }
+            
+            
+            rs.close();
+            ps.close();  
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-    public void uploadTransaksi() {
-        String kueri = "INSERT INTO pesanan (ID_Pesanan, ID_Menu, Jumlah, ID_Meja, ID_Customer, Total_Belanja, Tanggal_Transaksi) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        return newID;
+    }
+        return "1";
+    }
+    
+    private void buatTransaksi(){
+        String kueri = "INSERT INTO transaksi(ID_Transakasi, Total_Belanja, Tanggal_Pesanan) VALUES (?,?,?)";
         LocalDate tanggalSaatIni = LocalDate.now();
         String tanggalString = tanggalSaatIni.toString();
         java.sql.Date sqlDate = java.sql.Date.valueOf(tanggalString);
-        int id = Integer.parseInt(buatIDTransaksi());
-        int idCustomer = 2001;
+        String id = getNewIDTransaksi();
         try {
             PreparedStatement ps = con.prepareStatement(kueri);
             for (Keranjang k : krnjg) {
-                ps.setInt(1, id);
+                ps.setString(1, id);
+                ps.setFloat(2, Float.parseFloat(TFTotalHarga.getText()));
+                ps.setDate(3, sqlDate);
+
+                ps.executeUpdate();
+            }
+            uploadTransaksi(id);
+            System.out.println("Data berhasil diupload ke database.");
+
+        } catch (SQLException e) {
+            System.err.println("Error saat mengupload data ke database: " + e.getMessage());
+        }
+    }
+
+    private void uploadTransaksi(String id) {
+        String kueri = "INSERT INTO pesanan (ID_Transaksi, ID_Menu, Jumlah, ID_Meja, ID_Customer, Total_Harga, Jam_Pemesanan) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        LocalTime waktuFilter = LocalTime.now();
+        int idCustomer = cekCustomer();
+        try {
+            PreparedStatement ps = con.prepareStatement(kueri);
+            for (Keranjang k : krnjg) {
+                ps.setString(1, id);
                 ps.setInt(2, k.getIdMakan());
                 ps.setInt(3, k.getJumlahBeli());
-                ps.setInt(4, Integer.parseInt(TFNomorMeja.getText()));
+                ps.setString(4, meja.getIdMeja());
                 ps.setInt(5, idCustomer);
-                ps.setFloat(6, Float.parseFloat(TFTotalHarga.getText()));
-                ps.setDate(7, sqlDate);
+                ps.setFloat(6, k.getHarga());
+                ps.setTime(7, java.sql.Time.valueOf(waktuFilter));
 
                 ps.executeUpdate();
             }
@@ -620,11 +684,11 @@ public class DisplaySWK extends javax.swing.JFrame {
     private void bookingMeja(int statusBooking){
         if(con != null){
             String kueri;
-            int nomor = Integer.parseInt(TFMeja.getText());
+            int nomor = Integer.parseInt(meja.getNo());
             if (statusBooking == 1){
-            kueri = "UPDATE `meja` SET `Status`='1' WHERE Nomor_Meja = ?;";
+            kueri = "UPDATE `meja` SET `Status`='0' WHERE Nomor_Meja = ?;";
             }else{
-                kueri = "UPDATE `meja` SET `Status`='0' WHERE Nomor_Meja = ?";
+                kueri = "UPDATE `meja` SET `Status`='1' WHERE Nomor_Meja = ?";
             }
             try {
                 PreparedStatement ps = con.prepareStatement(kueri);
@@ -681,6 +745,8 @@ public class DisplaySWK extends javax.swing.JFrame {
         jLabel39 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         cbPesanan = new javax.swing.JComboBox<>();
+        jLabel40 = new javax.swing.JLabel();
+        TFNoMeja = new javax.swing.JTextField();
         jLabel37 = new javax.swing.JLabel();
         jButton4 = new javax.swing.JButton();
         jButton9 = new javax.swing.JButton();
@@ -948,7 +1014,7 @@ public class DisplaySWK extends javax.swing.JFrame {
 
         jLabel39.setBackground(new java.awt.Color(10, 38, 71));
         jLabel39.setForeground(new java.awt.Color(60, 63, 65));
-        jLabel39.setText("No Meja :");
+        jLabel39.setText("ID Meja :");
 
         jLabel12.setFont(new java.awt.Font("Trebuchet MS", 0, 18)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(0, 129, 138));
@@ -958,6 +1024,16 @@ public class DisplaySWK extends javax.swing.JFrame {
         cbPesanan.setFont(new java.awt.Font("Trebuchet MS", 0, 18)); // NOI18N
         cbPesanan.setForeground(new java.awt.Color(0, 0, 0));
         cbPesanan.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "On Site", "Take Away" }));
+
+        jLabel40.setBackground(new java.awt.Color(10, 38, 71));
+        jLabel40.setForeground(new java.awt.Color(60, 63, 65));
+        jLabel40.setText("No Meja :");
+
+        TFNoMeja.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TFNoMejaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel12Layout = new javax.swing.GroupLayout(jPanel12);
         jPanel12.setLayout(jPanel12Layout);
@@ -972,7 +1048,6 @@ public class DisplaySWK extends javax.swing.JFrame {
                     .addComponent(jLabel39))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(TFMeja, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(TFNama, javax.swing.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
                     .addComponent(TFNo)
                     .addGroup(jPanel12Layout.createSequentialGroup()
@@ -980,7 +1055,13 @@ public class DisplaySWK extends javax.swing.JFrame {
                         .addGap(32, 32, 32)
                         .addComponent(jLabel12)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cbPesanan, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(cbPesanan, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel12Layout.createSequentialGroup()
+                        .addComponent(TFMeja, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel40)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(TFNoMeja, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(55, Short.MAX_VALUE))
         );
         jPanel12Layout.setVerticalGroup(
@@ -1003,8 +1084,10 @@ public class DisplaySWK extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(TFMeja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel39))
-                .addContainerGap(9, Short.MAX_VALUE))
+                    .addComponent(jLabel39)
+                    .addComponent(jLabel40)
+                    .addComponent(TFNoMeja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
         jLabel37.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
@@ -2113,7 +2196,7 @@ public class DisplaySWK extends javax.swing.JFrame {
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // TODO add your handling code here:
-        uploadTransaksi();
+        buatTransaksi();
         System.out.println("berhasil upload transaksi");
     }//GEN-LAST:event_jButton6ActionPerformed
 
@@ -2316,8 +2399,13 @@ public class DisplaySWK extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
          int barisTerpilih = jtBooking.getSelectedRow();
-        TFMeja.setText(modelMeja.getValueAt(barisTerpilih, 0).toString()); 
-        TFKursi.setText(modelMeja.getValueAt(barisTerpilih, 1).toString());
+         String idMeja = modelMeja.getValueAt(barisTerpilih, 2).toString();
+         String no = modelMeja.getValueAt(barisTerpilih, 0).toString();
+         String kursi = modelMeja.getValueAt(barisTerpilih, 1).toString();
+         meja = new Meja(idMeja, no, kursi);
+        TFMeja.setText(idMeja);
+        TFNoMeja.setText(no);
+        TFKursi.setText(kursi);
         
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -2338,20 +2426,20 @@ public class DisplaySWK extends javax.swing.JFrame {
         String booking = cbPesanan.getSelectedItem().toString();
         String nama = TFNama.getText();
         String no =TFNo.getText();
-        long noMeja = Long.parseLong(no);
         
         if(nama.trim().isEmpty() || no.trim().isEmpty() ){
             JOptionPane.showMessageDialog(this, "Mohon Untuk Mengisi Nama dan Nomor Telefon"); 
         }else{
             if (booking.equals("On Site")){              
-                customer = new Customer(nama, noMeja);
+                customer = new Customer(nama, no );
                 bookingMeja(1);
                 TFNamaCustomer.setText(nama);
                 TFNoTelpCustomer.setText(no);
+                TFNomorMeja.setText(TFMeja.getText());
                 jTabbedPane.setSelectedIndex(4);
                 
             }else if(booking.equals("Take Away")){
-                customer = new Customer(nama, noMeja);
+                customer = new Customer(nama, no);
                 JOptionPane.showMessageDialog(this, "Silahkan memesan makanan");
                 TFNamaCustomer.setText(nama);
                 TFNoTelpCustomer.setText(no);
@@ -2393,6 +2481,10 @@ public class DisplaySWK extends javax.swing.JFrame {
         TFMeja.setText("");
     }//GEN-LAST:event_jButton9ActionPerformed
 
+    private void TFNoMejaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFNoMejaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TFNoMejaActionPerformed
+
 
     
     /**
@@ -2424,6 +2516,7 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JTextField TFNama;
     private javax.swing.JTextField TFNamaCustomer;
     private javax.swing.JTextField TFNo;
+    private javax.swing.JTextField TFNoMeja;
     private javax.swing.JTextField TFNoTelpCustomer;
     private javax.swing.JTextField TFNomorMeja;
     private javax.swing.JTextField TFPassword;
@@ -2494,6 +2587,7 @@ public class DisplaySWK extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel37;
     private javax.swing.JLabel jLabel39;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel40;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
