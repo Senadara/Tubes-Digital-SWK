@@ -278,41 +278,9 @@ public class DisplaySWK extends javax.swing.JFrame {
         }
     }
 
-    /**
-     * Creates new form DisplaySWK
-     */
-    public DisplaySWK() {
-        initComponents();
-        con = Koneksi.bukaKoneksi();
-        loadKolomStan();
-        loadKolomMakan();
-        loadKolomMinum();
-        loadKolomBookingMeja();
-        loadBookingMeja();
-        loadKolomKeranjang();
-        tampilBooking();
-        RBJenisMakan.setActionCommand("pil1");
-        buttonGroup.add(RBJenisMakan);
-        RBJenisMinum.setActionCommand("pil2");
-        buttonGroup.add(RBJenisMinum);
-        TFKursi.setEditable(false);
-        TFMeja.setEditable(false);
-        TFNamaCustomer.setEditable(false);
-        TFNoTelpCustomer.setEditable(false);
-        TFNomorMeja.setEditable(false);
-        reset();
-    }
-
-    private void reset() {
-        loadStan();
-        tampilStan();
-        loadMenu(2);
-        tampilMakanan();
-        tampilMinuman();
-    }
     
     private void backToLogin(){
-    int pil = JOptionPane.showConfirmDialog(this, "Anda Yakin ingin Menghapus pesanan ini?", 
+    int pil = JOptionPane.showConfirmDialog(this, "Anda Yakin ingin Kembali ke Halaman Login?", 
                 "Perhatian", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
         
         if (pil == JOptionPane.OK_OPTION){
@@ -706,12 +674,12 @@ private String getNewIDTransaksi() {
                 
                 int rowsAffected = ps.executeUpdate();
                     if (rowsAffected == 1) {
-                    JOptionPane.showMessageDialog(this, "Data Berhasil Terupdate");
+                    JOptionPane.showMessageDialog(this, "Stan Telah Berhasi Di Buka");
                     seller.setStatus(0);
                     TBStatus.setBackground(Color.GREEN);
-        TBStatus.setText("Buka");
+                    TBStatus.setText("Buka");
                     } else {
-                    JOptionPane.showMessageDialog(this, "Insert Data Failed");
+                    JOptionPane.showMessageDialog(this, "Gagal Buka Stan");
                     }
                 ps.close();
             } catch (SQLException ex) {
@@ -725,12 +693,12 @@ private String getNewIDTransaksi() {
                 
                 int rowsAffected = ps.executeUpdate();
                     if (rowsAffected == 1) {
-                    JOptionPane.showMessageDialog(this, "Data Berhasil Terupdate");
+                    JOptionPane.showMessageDialog(this, "Stan Telah Berhasi Di Tutup");
                     seller.setStatus(1);
                     TBStatus.setBackground(Color.RED);
                     TBStatus.setText("Tutup");
                     } else {
-                    JOptionPane.showMessageDialog(this, "Insert Data Failed");
+                    JOptionPane.showMessageDialog(this, "Gagal Tutup Stan");
                     }
                 ps.close();
             } catch (SQLException ex) {
@@ -969,6 +937,41 @@ private void shutdown() {
             }
         });
     }
+    
+       /**
+     * Creates new form DisplaySWK
+     */
+    public DisplaySWK() {
+        initComponents();
+        con = Koneksi.bukaKoneksi();
+        loadKolomStan();
+        loadKolomMakan();
+        loadKolomMinum();
+        loadKolomBookingMeja();
+        loadBookingMeja();
+        loadKolomKeranjang();
+        loadKolomPesanan();
+        loadKolomTransaksi();
+        tampilBooking();
+        RBJenisMakan.setActionCommand("pil1");
+        buttonGroup.add(RBJenisMakan);
+        RBJenisMinum.setActionCommand("pil2");
+        buttonGroup.add(RBJenisMinum);
+        TFKursi.setEditable(false);
+        TFMeja.setEditable(false);
+        TFNamaCustomer.setEditable(false);
+        TFNoTelpCustomer.setEditable(false);
+        TFNomorMeja.setEditable(false);
+        reset();
+    }
+
+    private void reset() {
+        loadStan();
+        tampilStan();
+        loadMenu(2);
+        tampilMakanan();
+        tampilMinuman();
+    }
 
 
     /**
@@ -981,7 +984,6 @@ private void shutdown() {
     private void initComponents() {
 
         jPanel4 = new javax.swing.JPanel();
-        jPanel7 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jTabbedPane = new javax.swing.JTabbedPane();
         PaneLogin = new javax.swing.JScrollPane();
@@ -1125,21 +1127,6 @@ private void shutdown() {
 
         jPanel4.setBackground(new java.awt.Color(10, 38, 71));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jPanel7.setBackground(new java.awt.Color(0, 129, 138));
-
-        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
-        jPanel7.setLayout(jPanel7Layout);
-        jPanel7Layout.setHorizontalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1060, Short.MAX_VALUE)
-        );
-        jPanel7Layout.setVerticalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 40, Short.MAX_VALUE)
-        );
-
-        jPanel4.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 0, 1060, 40));
 
         panelLogin.setBackground(new java.awt.Color(10, 38, 71));
 
@@ -1540,7 +1527,7 @@ private void shutdown() {
                     .addComponent(btnAdmin))
                 .addGap(88, 88, 88)
                 .addComponent(jButton3)
-                .addContainerGap(668, Short.MAX_VALUE))
+                .addContainerGap(703, Short.MAX_VALUE))
         );
 
         PaneLoginSeller.setViewportView(jPanel10);
@@ -1736,7 +1723,7 @@ private void shutdown() {
 
         jLabel35.setFont(new java.awt.Font("Trebuchet MS", 1, 18)); // NOI18N
         jLabel35.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel35.setText("TABEL PESANAN");
+        jLabel35.setText("TABEL DETAIL PESANAN");
 
         jButton10.setText("PROCESS");
         jButton10.addActionListener(new java.awt.event.ActionListener() {
@@ -2439,18 +2426,18 @@ private void shutdown() {
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 1310, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(236, Short.MAX_VALUE))
+                .addComponent(jTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 1316, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 236, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addComponent(jTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 1030, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 286, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(jTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 1060, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(324, Short.MAX_VALUE))
         );
 
-        jPanel4.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+        jPanel4.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -38, -1, 1390));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -2667,7 +2654,6 @@ private void shutdown() {
     private void TBStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TBStatusActionPerformed
         // TODO add your handling code here:
         statusStan();
-        radioButton();
     }//GEN-LAST:event_TBStatusActionPerformed
 
     private void btnSubmitMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitMenuActionPerformed
@@ -2714,21 +2700,18 @@ private void shutdown() {
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         // TODO add your handling code here:
-
-
         String email = TFEmail.getText();
         String pass = TFPassword.getText();
         login(email,pass);
         if (seller != null){
             txtNamaStan.setText(seller.getNama());
             jTabbedPane.setSelectedIndex(3);
-            loadKolomPesanan();
             updatePesanan();
             loadMenu(1);
             tampilMakanan();
             tampilMinuman();
             statusStan();
-            loadKolomTransaksi();
+
         }else{
             
         }
@@ -2996,7 +2979,6 @@ private void shutdown() {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane10;
