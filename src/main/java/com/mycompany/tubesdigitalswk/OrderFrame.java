@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 public class OrderFrame extends JFrame {
@@ -50,9 +51,6 @@ public class OrderFrame extends JFrame {
         }
     }
      
-    private void TampilkanDataCustomer(){
-    
-    }
 
       public OrderFrame() {
         initComponents();

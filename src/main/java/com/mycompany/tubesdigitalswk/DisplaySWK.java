@@ -502,25 +502,24 @@ private String getNewIDTransaksi() {
 }
 
     
-    private void buatTransaksi(){
-        String kueri = "INSERT INTO transaksi(ID_Transaksi, Total_Belanja, Tanggal_Pesanan) VALUES (?,?,?)";
-        LocalDate tanggalSaatIni = LocalDate.now();
-        String tanggalString = tanggalSaatIni.toString();
-        java.sql.Date sqlDate = java.sql.Date.valueOf(tanggalString);
-        String id = getNewIDTransaksi();
-        try {
-            PreparedStatement ps = con.prepareStatement(kueri);
-                ps.setString(1, id);
-                ps.setFloat(2, Float.parseFloat(TFTotalHarga.getText()));
-                ps.setDate(3, sqlDate);
-                ps.executeUpdate();
-            
-            uploadTransaksi(id);
+    private void buatTransaksi() {
+    String kueri = "INSERT INTO transaksi(ID_Transaksi, Total_Belanja, Tanggal_Pesanan) VALUES (?,?,?)";
+    LocalDate tanggalSaatIni = LocalDate.now();
+    java.sql.Date sqlDate = java.sql.Date.valueOf(tanggalSaatIni);
+    String id = getNewIDTransaksi();
+    
+    try (PreparedStatement ps = con.prepareStatement(kueri)) {
+        ps.setString(1, id);
+        ps.setFloat(2, Float.parseFloat(TFTotalHarga.getText()));
+        ps.setDate(3, sqlDate);
+        ps.executeUpdate();
 
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this,"Error saat mengupload data ke database: " + e.getMessage());
-        }
+        uploadTransaksi(id);
+
+    }catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error saat mengupload data ke database: " + e.getMessage());
     }
+}
 
     private void uploadTransaksi(String id) {
         ArrayList<Keranjang> newKrnjg = new ArrayList<>();
@@ -913,6 +912,7 @@ private String getNewIDTransaksi() {
 
         jPanel4 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
+        jPanel6 = new javax.swing.JPanel();
         jTabbedPane = new javax.swing.JTabbedPane();
         PaneLogin = new javax.swing.JScrollPane();
         panelLogin = new javax.swing.JPanel();
@@ -1050,7 +1050,6 @@ private String getNewIDTransaksi() {
         TFCariMinum = new javax.swing.JTextField();
         btnCariMakan = new javax.swing.JButton();
         btnCariMinum = new javax.swing.JButton();
-        jPanel6 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -2365,17 +2364,20 @@ private String getNewIDTransaksi() {
 
         jTabbedPane.addTab("tab4", PanePesanMakan);
 
-        jPanel4.add(jTabbedPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1310, 1030));
-
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1310, Short.MAX_VALUE)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 1310, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(236, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 999, Short.MAX_VALUE)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addComponent(jTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 1030, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 286, Short.MAX_VALUE))
         );
 
         jPanel4.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
