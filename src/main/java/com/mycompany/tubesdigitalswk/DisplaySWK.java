@@ -309,6 +309,15 @@ public class DisplaySWK extends javax.swing.JFrame {
         tampilMakanan();
         tampilMinuman();
     }
+    
+    private void backToLogin(){
+    int pil = JOptionPane.showConfirmDialog(this, "Anda Yakin ingin Menghapus pesanan ini?", 
+                "Perhatian", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+        
+        if (pil == JOptionPane.OK_OPTION){
+             jTabbedPane.setSelectedIndex(0);
+        }   
+    }
 
     private void cariStanByKeyword(String keyword) {
         if (con != null) {
@@ -465,7 +474,7 @@ private String getNewIDTransaksi() {
     if (con != null) {
         int currentYear = LocalDate.now().getYear();
         String newID = currentYear + "_" + 1;
-        String kueri = "SELECT COUNT(ID_Transakasi) AS Total_Transaksi,Tanggal_Pesanan FROM transaksi WHERE DATE_FORMAT(Tanggal_Pesanan, '%Y') = ?;";
+        String kueri = "SELECT COUNT(ID_Transaksi) AS Total_Transaksi,Tanggal_Pesanan FROM transaksi WHERE DATE_FORMAT(Tanggal_Pesanan, '%Y') = ?;";
         try {
             PreparedStatement ps = con.prepareStatement(kueri);
             ps.setInt(1, currentYear);
@@ -481,7 +490,7 @@ private String getNewIDTransaksi() {
             ps.close();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println(e);
         }
 
         return newID;
@@ -494,7 +503,7 @@ private String getNewIDTransaksi() {
 
     
     private void buatTransaksi(){
-        String kueri = "INSERT INTO transaksi(ID_Transakasi, Total_Belanja, Tanggal_Pesanan) VALUES (?,?,?)";
+        String kueri = "INSERT INTO transaksi(ID_Transaksi, Total_Belanja, Tanggal_Pesanan) VALUES (?,?,?)";
         LocalDate tanggalSaatIni = LocalDate.now();
         String tanggalString = tanggalSaatIni.toString();
         java.sql.Date sqlDate = java.sql.Date.valueOf(tanggalString);
@@ -507,7 +516,6 @@ private String getNewIDTransaksi() {
                 ps.executeUpdate();
             
             uploadTransaksi(id);
-            JOptionPane.showMessageDialog(this,"Data berhasil diupload ke database.");
 
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this,"Error saat mengupload data ke database: " + e.getMessage());
@@ -516,10 +524,16 @@ private String getNewIDTransaksi() {
 
     private void uploadTransaksi(String id) {
         ArrayList<Keranjang> newKrnjg = new ArrayList<>();
-        String kueri = "INSERT INTO pesanan (ID_Transaksi, ID_Menu, Jumlah, ID_Meja, ID_Customer, Total_Harga, Jam_Pemesanan) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String kueri;
+        if(meja != null){
+        kueri = "INSERT INTO pesanan (ID_Transaksi, ID_Menu, Jumlah, ID_Customer, Total_Harga, Jam_Pemesanan, ID_Meja) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        }else{
+            kueri = "INSERT INTO pesanan (ID_Transaksi, ID_Menu, Jumlah, ID_Customer, Total_Harga, Jam_Pemesanan) VALUES (?, ?, ?, ?, ?, ?)";
+        }
         LocalTime waktuFilter = LocalTime.now();
         cekCustomer();
         int idCustomer = customer.getId();
+        
         try {
             PreparedStatement ps = con.prepareStatement(kueri);
             int i = 0;
@@ -527,10 +541,12 @@ private String getNewIDTransaksi() {
                 ps.setString(1, id);
                 ps.setInt(2, k.getIdMakan());
                 ps.setInt(3, k.getJumlahBeli());
-                ps.setString(4, meja.getIdMeja());
-                ps.setInt(5, idCustomer);
-                ps.setFloat(6, k.getHarga());
-                ps.setTime(7, java.sql.Time.valueOf(waktuFilter));
+                ps.setInt(4, idCustomer);
+                ps.setFloat(5, k.getHarga());
+                ps.setTime(6, java.sql.Time.valueOf(waktuFilter));
+                if(meja != null){
+                    ps.setString(7, meja.getIdMeja());
+                }
 
                 ps.executeUpdate();
                i++;
@@ -562,7 +578,6 @@ private String getNewIDTransaksi() {
 
     private void editMenu(String tombol) {
         if (con != null) {
-            String menuId = " ";
             int type = radioButton();
             int idStan = seller.getID(); 
             String namaMakanan = tfNamaMenu.getText();
@@ -576,8 +591,7 @@ private String getNewIDTransaksi() {
                  kueri = "INSERT INTO menu ( Type, Nama, Harga, Status, ID_Stan) VALUES (?, ?, ?, ?, ?);";
             }   
             try {
-                PreparedStatement ps = con.prepareStatement(kueri);
-         
+                PreparedStatement ps = con.prepareStatement(kueri);        
                 ps.setInt(1, type);
                 ps.setString(2, namaMakanan);
                 ps.setFloat(3, hargaMakanan);
@@ -906,7 +920,7 @@ private String getNewIDTransaksi() {
         btnLanjut = new javax.swing.JButton();
         PaneBookingMeja = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        btnBooking = new javax.swing.JButton();
         jScrollPane9 = new javax.swing.JScrollPane();
         jtBooking = new javax.swing.JTable();
         jLabel18 = new javax.swing.JLabel();
@@ -1122,11 +1136,11 @@ private String getNewIDTransaksi() {
 
         jPanel1.setBackground(new java.awt.Color(0, 129, 138));
 
-        jButton1.setFont(new java.awt.Font("Trebuchet MS", 0, 18)); // NOI18N
-        jButton1.setText("Booking");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnBooking.setFont(new java.awt.Font("Trebuchet MS", 0, 18)); // NOI18N
+        btnBooking.setText("Booking");
+        btnBooking.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnBookingActionPerformed(evt);
             }
         });
 
@@ -1206,7 +1220,6 @@ private String getNewIDTransaksi() {
 
         cbPesanan.setBackground(new java.awt.Color(255, 204, 0));
         cbPesanan.setFont(new java.awt.Font("Trebuchet MS", 0, 18)); // NOI18N
-        cbPesanan.setForeground(new java.awt.Color(0, 0, 0));
         cbPesanan.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "On Site", "Take Away" }));
 
         jLabel40.setBackground(new java.awt.Color(10, 38, 71));
@@ -1313,7 +1326,7 @@ private String getNewIDTransaksi() {
                         .addGap(336, 336, 336)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(jButton1)
+                                .addComponent(btnBooking)
                                 .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 556, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(193, 193, 193)
@@ -1340,7 +1353,7 @@ private String getNewIDTransaksi() {
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton1)
+                .addComponent(btnBooking)
                 .addGap(69, 69, 69)
                 .addComponent(jLabel26)
                 .addGap(8, 8, 8)
@@ -2350,7 +2363,7 @@ private String getNewIDTransaksi() {
 
         jTabbedPane.addTab("tab4", PanePesanMakan);
 
-        jPanel4.add(jTabbedPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1310, 990));
+        jPanel4.add(jTabbedPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1310, 1030));
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -2643,7 +2656,7 @@ private String getNewIDTransaksi() {
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
-        jTabbedPane.setSelectedIndex(0);
+        backToLogin();
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void RBJenisMakanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RBJenisMakanActionPerformed
@@ -2652,21 +2665,27 @@ private String getNewIDTransaksi() {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        jTabbedPane.setSelectedIndex(0);
+        backToLogin();
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnBookingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBookingActionPerformed
         // TODO add your handling code here:
          int barisTerpilih = jtBooking.getSelectedRow();
          String idMeja = modelMeja.getValueAt(barisTerpilih, 2).toString();
          String no = modelMeja.getValueAt(barisTerpilih, 0).toString();
          String kursi = modelMeja.getValueAt(barisTerpilih, 1).toString();
-         meja = new Meja(idMeja, no, kursi);
-        TFMeja.setText(idMeja);
-        TFNoMeja.setText(no);
-        TFKursi.setText(kursi);
+         String status = modelMeja.getValueAt(barisTerpilih, 3).toString();
+         if(status != "Booked"){
+            meja = new Meja(idMeja, no, kursi);
+            TFMeja.setText(idMeja);
+            TFNoMeja.setText(no);
+            TFKursi.setText(kursi);  
+         }else{
+             JOptionPane.showMessageDialog(this, "Mohon Maaf Meja Telah Terbooking");
+         }
+         
         
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnBookingActionPerformed
 
     private void TFNoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFNoActionPerformed
         // TODO add your handling code here:
@@ -2704,11 +2723,7 @@ private String getNewIDTransaksi() {
                 TFNoTelpCustomer.setText(no);
                 jTabbedPane.setSelectedIndex(4);
             }
-        }
-
-        
-        
-        
+        }     
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
@@ -2716,16 +2731,17 @@ private String getNewIDTransaksi() {
         tfNamaMenu.setText("");
         tfHargaMenu.setText("");
         btnSubmitMenu.setText("Submit");
+        buttonGroup.clearSelection();
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         // TODO add your handling code here:
-        jTabbedPane.setSelectedIndex(0);
+        backToLogin();
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         // TODO add your handling code here:
-        jTabbedPane.setSelectedIndex(0);
+        backToLogin();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void TFNamaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFNamaActionPerformed
@@ -2808,6 +2824,7 @@ private String getNewIDTransaksi() {
     private javax.swing.JTable TableTransaksi;
     private javax.swing.JLabel Text;
     private javax.swing.JButton btnAdmin;
+    private javax.swing.JButton btnBooking;
     private javax.swing.JButton btnCariMakan;
     private javax.swing.JButton btnCariMinum;
     private javax.swing.JButton btnCariStan;
@@ -2823,7 +2840,6 @@ private String getNewIDTransaksi() {
     private javax.swing.JComboBox<String> cbPesanan;
     private javax.swing.JComboBox<String> cbPilihan;
     private javax.swing.JComboBox<String> cbStatusMenu;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;

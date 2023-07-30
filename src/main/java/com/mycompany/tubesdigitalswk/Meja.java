@@ -11,7 +11,7 @@ package com.mycompany.tubesdigitalswk;
 public class Meja {
     String idMeja, no, kursi;
     
-    Meja(String idMeja, String no, String Kursi){
+    Meja(String idMeja, String no, String kursi){
         this.idMeja = idMeja;
         this.no = no;
         this.kursi = kursi;
