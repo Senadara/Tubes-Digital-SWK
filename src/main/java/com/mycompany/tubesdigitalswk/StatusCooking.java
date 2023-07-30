@@ -9,15 +9,20 @@ package com.mycompany.tubesdigitalswk;
  * @author putra
  */
 public class StatusCooking {
-    String namaCustomer, namaMakanan, catatan;
+    String namaCustomer, namaMakanan, catatan, id;
     int jumlah, status;
     
-    StatusCooking(String namaCustomer, String namaMakanan, int jumlah, String catatan, int status){
+    StatusCooking(String id, String namaCustomer, String namaMakanan, int jumlah, String catatan, int status){
         this.namaCustomer = namaCustomer;
         this.namaMakanan = namaMakanan;
         this.jumlah = jumlah;
         this.catatan = catatan;
         this.status = status;
+        this.id = id;
+    }
+    
+    public String getID(){
+        return id;
     }
     
     public String getNamaCustomer(){

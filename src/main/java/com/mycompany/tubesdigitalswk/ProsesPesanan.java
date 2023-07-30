@@ -4,7 +4,11 @@
  */
 package com.mycompany.tubesdigitalswk;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -13,12 +17,44 @@ import javax.swing.table.DefaultTableModel;
  */
 public class ProsesPesanan extends javax.swing.JFrame {
     DefaultTableModel model;
+    Connection con;
     
     
     private void loadTabel(ArrayList<StatusCooking> cooking){
         model = (DefaultTableModel) TabelCheckList.getModel();
         for (StatusCooking sc : cooking) {
-        model.addRow(new Object[]{sc.getNamaCustomer(), sc.getNamaMakanan(), sc.getJumlah(), sc.getCatatan(), sc.getStatus()});
+            System.out.println(sc.getID());
+        model.addRow(new Object[]{sc.getID(), sc.getNamaCustomer(), sc.getNamaMakanan(), sc.getJumlah(), sc.getCatatan(), sc.getStatus()});
+        }
+    }
+    
+    private void updateData() {
+        if(con != null){
+        try {
+            String updateQuery = "UPDATE pesanan SET status = ? WHERE ID_Pesanan = ?";
+            PreparedStatement ps = con.prepareStatement(updateQuery);
+
+            for (int i = 0; i < model.getRowCount(); i++) {
+                boolean status = (boolean) model.getValueAt(i, 5);
+                long id = Long.parseLong(model.getValueAt(i, 0).toString());
+                int checkbox = 0;
+                if (status){
+                    checkbox = 1;
+                }
+                ps.setInt(1, checkbox);
+                ps.setLong(2, id);
+
+                ps.addBatch();
+            }
+
+            ps.executeBatch();
+
+            ps.close();
+
+            JOptionPane.showMessageDialog(this, "Terimakasih Data Berhasil Terupdate");
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, ex);
+        }
         }
     }
 
@@ -28,6 +64,7 @@ public class ProsesPesanan extends javax.swing.JFrame {
     public ProsesPesanan(ArrayList<StatusCooking> cooking) {
         initComponents();
         loadTabel(cooking);
+        con = Koneksi.bukaKoneksi();
     }
 
     /**
@@ -52,14 +89,14 @@ public class ProsesPesanan extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Nama Pemesan", "Nama Makanan", "Jumlah Pesanan", "Catatan", "Status"
+                "ID Pesanan", "Nama Pemesan", "Nama Makanan", "Jumlah Pesanan", "Catatan", "Status"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class
+                java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, true, true
+                false, false, false, false, false, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -72,8 +109,8 @@ public class ProsesPesanan extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(TabelCheckList);
         if (TabelCheckList.getColumnModel().getColumnCount() > 0) {
-            TabelCheckList.getColumnModel().getColumn(4).setPreferredWidth(20);
-            TabelCheckList.getColumnModel().getColumn(4).setMaxWidth(20);
+            TabelCheckList.getColumnModel().getColumn(5).setPreferredWidth(20);
+            TabelCheckList.getColumnModel().getColumn(5).setMaxWidth(20);
         }
 
         jLabel28.setFont(new java.awt.Font("Trebuchet MS", 1, 24)); // NOI18N
@@ -134,6 +171,7 @@ public class ProsesPesanan extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+        updateData();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     

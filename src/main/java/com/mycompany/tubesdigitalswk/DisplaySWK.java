@@ -364,11 +364,9 @@ public class DisplaySWK extends javax.swing.JFrame {
                         if (type == 2) {
                             Minuman minuman = new Minuman(id, nama, harga, idStan, status);
                             Minum.add(minuman);
-                            System.out.println("1");
                         } else if (type == 1) {
                             Makanan makanan = new Makanan(id, nama, harga, idStan, status);
                             Makan.add(makanan);
-                            System.out.println("2");
                         }
                     }
                     rs.close();
@@ -441,10 +439,8 @@ public class DisplaySWK extends javax.swing.JFrame {
         psSelect.close();
         
         if (idCustomer != 0){
-            System.out.println("menambahkan id ke objek customer");
             customer.setId(idCustomer);
         } else {
-            System.out.println("tambah user baru");
             kueri = "INSERT INTO `customer`(`Nama_Customer`, `No_Telp`) VALUES (?,?);";
             try{
             PreparedStatement ps = con.prepareStatement(kueri);
@@ -477,7 +473,6 @@ private String getNewIDTransaksi() {
             
             if (rs.next()) {
                 int maxID = rs.getInt("Total_Transaksi");
-                System.out.println(maxID);
                 maxID += 1;
                 newID = currentYear + "_" + maxID;
             }
@@ -512,10 +507,10 @@ private String getNewIDTransaksi() {
                 ps.executeUpdate();
             
             uploadTransaksi(id);
-            System.out.println("Data berhasil diupload ke database.");
+            JOptionPane.showMessageDialog(this,"Data berhasil diupload ke database.");
 
         } catch (SQLException e) {
-            System.err.println("Error saat mengupload data ke database: " + e.getMessage());
+            JOptionPane.showMessageDialog(this,"Error saat mengupload data ke database: " + e.getMessage());
         }
     }
 
@@ -525,7 +520,6 @@ private String getNewIDTransaksi() {
         LocalTime waktuFilter = LocalTime.now();
         cekCustomer();
         int idCustomer = customer.getId();
-        System.out.println(idCustomer + "idCustomer");
         try {
             PreparedStatement ps = con.prepareStatement(kueri);
             int i = 0;
@@ -574,7 +568,6 @@ private String getNewIDTransaksi() {
             String namaMakanan = tfNamaMenu.getText();
             float hargaMakanan = Float.parseFloat(tfHargaMenu.getText());
             int statusMakanan = cbStatusMenu.getSelectedIndex();
-            System.out.println(type);
             String kueri;
             if (tombol.equals("Ubah")){
                  kueri = "UPDATE `menu` SET `Type`=?,`Nama`=?,`Harga`=?,`Status`=?,`ID_Stan`=?, `ID_Menu`=? where ID_Menu = ?;";
@@ -798,7 +791,7 @@ private String getNewIDTransaksi() {
        ArrayList<StatusCooking> scking = new ArrayList<>();
             if (con != null) {
                 if(tampilan == 1){
-                String kueri = "SELECT c.Nama_Customer, p.ID_Meja, m.Nama, p.Jumlah, p.Total_Harga, p.catatan , p.Jam_Pemesanan, p.status FROM pesanan p INNER JOIN menu m ON p.ID_Menu = m.ID_Menu INNER JOIN customer c ON p.ID_Customer = c.ID_Customer WHERE m.ID_Stan = ? AND p.status = 0 ORDER BY Jam_Pemesanan ASC;";
+                String kueri = "SELECT c.Nama_Customer, p.ID_Meja, m.Nama, p.Jumlah, p.Total_Harga, p.catatan , p.Jam_Pemesanan, p.status, p.ID_Pesanan FROM pesanan p INNER JOIN menu m ON p.ID_Menu = m.ID_Menu INNER JOIN customer c ON p.ID_Customer = c.ID_Customer WHERE m.ID_Stan = ? AND p.status = 0 ORDER BY Jam_Pemesanan ASC;";
                 try {
                 PreparedStatement ps = con.prepareStatement(kueri);
                 ps.setInt(1, seller.getID());
@@ -815,14 +808,15 @@ private String getNewIDTransaksi() {
                     Time jamPemesanan = rs.getTime("Jam_Pemesanan");
                     String catatan = rs.getString("Catatan");
                     int status = rs.getInt("status");
+                    String idPesanan = rs.getString("ID_Pesanan");
 
                     // Tambahkan data ke tabel pesanan pada GUI
                     modelPesanan.addRow(new Object[]{customer, idMeja, makanan, jumlah, totalHarga, catatan, jamPemesanan, status});
-                    StatusCooking cooking = new StatusCooking(customer, makanan, jumlah, catatan, status);
+                    StatusCooking cooking = new StatusCooking(idPesanan, customer, makanan, jumlah, catatan, status);
                     scking.add(cooking);  
-                    sc=scking;                 
+                                     
                 }
-
+                sc=scking;
                 rs.close();
                 ps.close();
             
@@ -830,7 +824,7 @@ private String getNewIDTransaksi() {
             Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
         }
         }else{
-              String kueri = "SELECT c.Nama_Customer, p.ID_Meja, m.Nama, p.Jumlah, p.Total_Harga, p.catatan , p.Jam_Pemesanan, p.status,p.ID_Transaksi FROM pesanan p INNER JOIN menu m ON p.ID_Menu = m.ID_Menu INNER JOIN customer c ON p.ID_Customer = c.ID_Customer WHERE m.ID_Stan = ? AND p.status = 0 AND p.ID_Transaksi = ? ORDER BY Jam_Pemesanan ASC;";
+              String kueri = "SELECT c.Nama_Customer, p.ID_Meja, m.Nama, p.Jumlah, p.Total_Harga, p.catatan , p.Jam_Pemesanan, p.status, p.ID_Pesanan, p.ID_Transaksi FROM pesanan p INNER JOIN menu m ON p.ID_Menu = m.ID_Menu INNER JOIN customer c ON p.ID_Customer = c.ID_Customer WHERE m.ID_Stan = ? AND p.status = 0 AND p.ID_Transaksi = ? ORDER BY Jam_Pemesanan ASC;";
                 try {
                 PreparedStatement ps = con.prepareStatement(kueri);
                 ps.setInt(1, seller.getID());
@@ -848,14 +842,15 @@ private String getNewIDTransaksi() {
                     Time jamPemesanan = rs.getTime("Jam_Pemesanan");
                     String catatan = rs.getString("Catatan");
                     int status = rs.getInt("status");
+                    String idPesanan = rs.getString("ID_Pesanan");
 
                     // Tambahkan data ke tabel pesanan pada GUI
                     modelPesanan.addRow(new Object[]{customer, idMeja, makanan, jumlah, totalHarga, catatan, jamPemesanan, status});
-                    StatusCooking cooking = new StatusCooking(customer, makanan, jumlah, catatan, status);
+                    StatusCooking cooking = new StatusCooking(idPesanan, customer, makanan, jumlah, catatan, status);
                     scking.add(cooking);  
-                    sc=scking;
+                    
                 }
-
+                sc=scking;
                 rs.close();
                 ps.close();
             
@@ -878,9 +873,9 @@ private String getNewIDTransaksi() {
             ps.setInt(1, id);
             int rowsDeleted = ps.executeUpdate();
             if (rowsDeleted > 0) {
-                System.out.println("Data berhasil dihapus dari database.");
+                JOptionPane.showMessageDialog(this,"Data berhasil dihapus dari database.");
             } else {
-                System.out.println("Data tidak ditemukan atau gagal dihapus.");
+                JOptionPane.showMessageDialog(this,"Data tidak ditemukan atau gagal dihapus.");
             }
             ps.close();
             } catch (SQLException ex) {
@@ -2396,7 +2391,6 @@ private String getNewIDTransaksi() {
         } else {
             cariMenuByKeyword(2, 2, keyword);
             tampilMinuman();
-            System.out.println("dsafdf");
         }
     }//GEN-LAST:event_btnCariMinumActionPerformed
 
@@ -2752,6 +2746,7 @@ private String getNewIDTransaksi() {
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
         // TODO add your handling code here:
+        
         ProsesPesanan pp = new ProsesPesanan(sc);
         pp.setVisible(true);
     }//GEN-LAST:event_jButton10ActionPerformed
