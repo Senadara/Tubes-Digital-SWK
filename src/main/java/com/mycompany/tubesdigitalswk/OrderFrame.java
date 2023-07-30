@@ -113,6 +113,11 @@ public class OrderFrame extends JFrame {
         tfNomorCustomer.setText(noHp);
         tfNomorMejaCustomer.setText(noMeja);
         tfJumlahPembayaran.setText(harga);
+       
+        tfNamaCustomer. setEditable(false);
+        tfNomorCustomer. setEditable(false);
+        tfNomorMejaCustomer. setEditable(false);
+        tfJumlahPembayaran. setEditable(false);
     }
 
      
@@ -148,8 +153,6 @@ public class OrderFrame extends JFrame {
         jLabel8 = new javax.swing.JLabel();
         btnSelesaiMakan = new javax.swing.JCheckBox();
         jSeparator1 = new javax.swing.JSeparator();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jPanel1.setBackground(new java.awt.Color(0, 129, 138));
 

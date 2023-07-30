@@ -7,6 +7,8 @@ package com.mycompany.tubesdigitalswk;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -230,7 +232,7 @@ public class DisplaySWK extends javax.swing.JFrame {
                 rs.close();
                 ps.close();
             }catch(SQLException ex){
-                Logger.getLogger(PilihanMakan.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
             }
         }else{
             JOptionPane.showMessageDialog(this, "Koneksi Ke Database Gagal");
@@ -281,7 +283,6 @@ public class DisplaySWK extends javax.swing.JFrame {
      */
     public DisplaySWK() {
         initComponents();
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
         con = Koneksi.bukaKoneksi();
         loadKolomStan();
         loadKolomMakan();
@@ -557,7 +558,7 @@ private String getNewIDTransaksi() {
             if (i != 0){
             JOptionPane.showMessageDialog(this, "Mohon Menunggu Pesanan Anda");
             
-            OrderFrame of = new OrderFrame(id, customer.getNama(), customer.getNoTelp(), meja.getNo(), Float.toString(tHarga));
+            OrderFrame of = new OrderFrame(id, customer.getNama(), customer.getNoTelp(), noMeja, Float.toString(tHarga));
             of.setVisible(true);
             
             krnjg = newKrnjg;
@@ -685,8 +686,7 @@ private String getNewIDTransaksi() {
                 rs.close();
                 ps.close();
             }catch(SQLException ex){
-                Logger.getLogger(loginPage.class.getName()).log(Level.SEVERE, null, ex);
-                
+                Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);                
                 JOptionPane.showMessageDialog(this, "Email atau Password tidak tersedia atau salah");
             }
         }else{
@@ -909,6 +909,67 @@ private String getNewIDTransaksi() {
             JOptionPane.showMessageDialog(this, "Koneksi Ke Database Gagal");
         }
     }
+    
+private void shutdown() {
+        if (meja != null && con != null) {
+            String kueri = "UPDATE meja SET Status = 1 WHERE ID_Meja = ?;";
+            try {
+                PreparedStatement ps = con.prepareStatement(kueri);
+                ps.setString(1, meja.getIdMeja());
+                int rowsUpdated = ps.executeUpdate();
+                if (rowsUpdated > 0) {
+                    System.exit(0);
+                }
+                ps.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            System.exit(0);
+        }
+    }
+
+
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(DisplaySWK.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(DisplaySWK.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(DisplaySWK.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(DisplaySWK.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                DisplaySWK frame = new DisplaySWK();
+                frame.setVisible(true);
+            frame.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        // Panggil method shutdown() untuk mengupdate status meja sebelum program ditutup
+                        frame.shutdown(); // Panggil method shutdown() di frame DisplaySWK
+                    }
+                });
+            }
+        });
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -1071,14 +1132,14 @@ private String getNewIDTransaksi() {
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGap(0, 1060, Short.MAX_VALUE)
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 30, Short.MAX_VALUE)
+            .addGap(0, 40, Short.MAX_VALUE)
         );
 
-        jPanel4.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(1010, 0, 300, 30));
+        jPanel4.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 0, 1060, 40));
 
         panelLogin.setBackground(new java.awt.Color(10, 38, 71));
 
@@ -2309,18 +2370,18 @@ private String getNewIDTransaksi() {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnCariMinum)))))
                 .addGap(23, 23, 23))
+            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(panelPesananLayout.createSequentialGroup()
-                .addGap(23, 23, 23)
+                .addGap(21, 21, 21)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         panelPesananLayout.setVerticalGroup(
             panelPesananLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelPesananLayout.createSequentialGroup()
-                .addGap(5, 5, 5)
+                .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(5, 5, 5)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panelPesananLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -2791,10 +2852,13 @@ private String getNewIDTransaksi() {
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
         // TODO add your handling code here:
-        
+        if(modelPesanan.getColumnCount() > 0){
         ProsesPesanan pp = new ProsesPesanan(sc);
         modelPesanan.setRowCount(0);
         pp.setVisible(true);
+        }else{
+            JOptionPane.showMessageDialog(this, "Maaf Tabel Detail Pesanan Belum Terisi");
+        }
         
     }//GEN-LAST:event_jButton10ActionPerformed
 
