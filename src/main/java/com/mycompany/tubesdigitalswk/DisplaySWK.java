@@ -553,6 +553,8 @@ private String getNewIDTransaksi() {
             }
             if (i != 0){
             JOptionPane.showMessageDialog(this, "Mohon Menunggu Pesanan Anda");
+            OrderFrame of = new OrderFrame();
+            of.setVisible(true);
             krnjg = newKrnjg;
             tampilKeranjang();
             }else{
