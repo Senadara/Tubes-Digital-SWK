@@ -28,29 +28,39 @@ public class ProsesPesanan extends javax.swing.JFrame {
         }
     }
     
-    private void updateData() {
+    private void updateData(int opsi) {
         if(con != null){
+        
         try {
             String updateQuery = "UPDATE pesanan SET status = ? WHERE ID_Pesanan = ?";
             PreparedStatement ps = con.prepareStatement(updateQuery);
+            if(opsi != 2){
+                for (int i = 0; i < model.getRowCount(); i++) {
+                long id = Long.parseLong(model.getValueAt(i, 0).toString());
+                ps.setInt(1, opsi);
+                ps.setLong(2, id);
 
+                ps.addBatch();
+            }
+            ps.executeBatch();
+            ps.close();
+            }else{
             for (int i = 0; i < model.getRowCount(); i++) {
                 boolean status = (boolean) model.getValueAt(i, 5);
                 long id = Long.parseLong(model.getValueAt(i, 0).toString());
-                int checkbox = 0;
+                int checkbox = 1;
                 if (status){
-                    checkbox = 1;
+                    checkbox = 2;
                 }
                 ps.setInt(1, checkbox);
                 ps.setLong(2, id);
 
                 ps.addBatch();
             }
-
             ps.executeBatch();
-
             ps.close();
-
+            }
+        
             JOptionPane.showMessageDialog(this, "Terimakasih Data Berhasil Terupdate");
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, ex);
@@ -65,6 +75,7 @@ public class ProsesPesanan extends javax.swing.JFrame {
         initComponents();
         loadTabel(cooking);
         con = Koneksi.bukaKoneksi();
+        updateData(1);
     }
 
     /**
@@ -171,7 +182,7 @@ public class ProsesPesanan extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        updateData();
+        updateData(2);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     

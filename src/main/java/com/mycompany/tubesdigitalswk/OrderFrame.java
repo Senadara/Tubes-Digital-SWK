@@ -4,6 +4,8 @@
  */
 package com.mycompany.tubesdigitalswk;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,14 +13,17 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 
 public class OrderFrame extends JFrame {
 
     private Connection con;
     private DefaultTableModel modelOrder = new DefaultTableModel();
+    String idTransaksi;
 
 
   
@@ -28,20 +33,40 @@ public class OrderFrame extends JFrame {
         modelOrder.addColumn("Status");
         TabelStatusPesanan.setModel(modelOrder);
     }
+    
+    public void updatePesanan() {
+        // Timer untuk polling setiap 5 detik
+        Timer timer = new Timer(7000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loadOrderDetail();
+            }
+        });
+        timer.start();
+    }
 
-     private void loadOrderDetail() {
+    private void loadOrderDetail() {
         if (con != null) {
-            String kueri = "SELECT s.Nama_Stan, m.Nama, m.Status FROM stan s INNER JOIN menu m ON m.ID_Stan = s.ID_Stan;";
+            String kueri = "SELECT p.ID_Transaksi, p.status, p.Jumlah, p.Total_Harga, s.Nama_Stan, c.Nama_Customer, m.Nama FROM pesanan p INNER JOIN customer c ON p.ID_Customer = c.ID_Customer INNER JOIN menu m ON p.ID_Menu = m.ID_Menu INNER JOIN stan s ON m.ID_Stan = s.ID_Stan WHERE ID_Transaksi = ?";
             try {
                 PreparedStatement ps = con.prepareStatement(kueri);
+                ps.setString(1, idTransaksi);
                 ResultSet rs = ps.executeQuery();
                 modelOrder.setRowCount(0);
 
                 while (rs.next()) {
                     String namaStan = rs.getString("Nama_Stan");
                     String namaPesanan = rs.getString("Nama");
-                    int status = rs.getInt("Status");
-                    modelOrder.addRow(new Object[]{namaStan, namaPesanan, status});
+                    int status = rs.getInt("status");
+                    String stts = "";
+                    switch(status){
+                        case 0 -> stts = "Menunggu Konfirmasi Seller";
+                        case 1 -> stts = "Pesanan Anda Sedang di Prosses";
+                        case 2 -> stts = "Pesanan Anda Sedang di antar";                       
+                    }
+                    modelOrder.addRow(new Object[]{namaStan, namaPesanan, stts});
+
+                    
                 }
                 rs.close();
                 ps.close();
@@ -50,20 +75,47 @@ public class OrderFrame extends JFrame {
             }
         }
     }
+    
+    private void selesaiMakan(){
+        if(con != null){
+            boolean checkbox = btnSelesaiMakan.isSelected();
+            if(checkbox){
+            String kueri = "UPDATE pesanan p INNER JOIN meja m ON p.ID_Meja = m.ID_Meja SET p.status = '3', m.Status = '1' WHERE p.ID_Transaksi = ? ;";
+            try{
+            PreparedStatement ps = con.prepareStatement(kueri);
+            ps.setString(1, idTransaksi);
+            int rowsUpdated = ps.executeUpdate();
+                if (rowsUpdated > 0) {
+                    JOptionPane.showMessageDialog(this, "Terimakasih Sudah Makan di DIGITAL SWK :)");
+                    System.exit(0);
+                }
+            ps.close();
+            
+            } catch (SQLException ex) {
+                Logger.getLogger(OrderFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }            
+            }else{
+                JOptionPane.showMessageDialog(this, "Mohon untuk Memeriksa dan Mengisi CheckBox");
+            }
+        }
+    }
      
 
-      public OrderFrame() {
+      public OrderFrame(String idTransaksi, String nama, String noHp, String noMeja, String harga) {
         initComponents();
+        
+        this.idTransaksi = idTransaksi;
         loadKolomOrder();
         con = Koneksi.bukaKoneksi();
         setLocationRelativeTo(null);
-        loadOrderDetail();
-       
+        updatePesanan(); 
+        tfNamaCustomer.setText(nama);
+        tfNomorCustomer.setText(noHp);
+        tfNomorMejaCustomer.setText(noMeja);
+        tfJumlahPembayaran.setText(harga);
     }
 
      
-    
-
   
 
 
@@ -94,7 +146,7 @@ public class OrderFrame extends JFrame {
         jLabel7 = new javax.swing.JLabel();
         btnKeluar = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
-        RBselesaiMakan = new javax.swing.JCheckBox();
+        btnSelesaiMakan = new javax.swing.JCheckBox();
         jSeparator1 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -129,8 +181,10 @@ public class OrderFrame extends JFrame {
         jLabel1.setForeground(new java.awt.Color(10, 38, 71));
         jLabel1.setText("Nama :");
 
+        tfNamaCustomer.setEditable(false);
         tfNamaCustomer.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(216, 146, 22)));
 
+        tfNomorCustomer.setEditable(false);
         tfNomorCustomer.setForeground(new java.awt.Color(216, 146, 22));
         tfNomorCustomer.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(216, 146, 22)));
         tfNomorCustomer.addActionListener(new java.awt.event.ActionListener() {
@@ -143,6 +197,7 @@ public class OrderFrame extends JFrame {
         jLabel4.setForeground(new java.awt.Color(10, 38, 71));
         jLabel4.setText("No Meja :");
 
+        tfNomorMejaCustomer.setEditable(false);
         tfNomorMejaCustomer.setForeground(new java.awt.Color(216, 146, 22));
         tfNomorMejaCustomer.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(216, 146, 22)));
         tfNomorMejaCustomer.addActionListener(new java.awt.event.ActionListener() {
@@ -194,6 +249,7 @@ public class OrderFrame extends JFrame {
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("STATUS PESANAN");
 
+        tfJumlahPembayaran.setEditable(false);
         tfJumlahPembayaran.setForeground(new java.awt.Color(216, 146, 22));
         tfJumlahPembayaran.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(216, 146, 22)));
         tfJumlahPembayaran.addActionListener(new java.awt.event.ActionListener() {
@@ -249,7 +305,7 @@ public class OrderFrame extends JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel8)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(RBselesaiMakan))
+                                .addComponent(btnSelesaiMakan))
                             .addComponent(btnKeluar)))))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
@@ -277,7 +333,7 @@ public class OrderFrame extends JFrame {
                         .addGap(29, 29, 29)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(RBselesaiMakan, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                            .addComponent(btnSelesaiMakan, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnKeluar)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
@@ -321,6 +377,8 @@ public class OrderFrame extends JFrame {
 
     private void btnKeluarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKeluarActionPerformed
         // TODO add your handling code here:
+        selesaiMakan();
+        
     }//GEN-LAST:event_btnKeluarActionPerformed
 
     /**
@@ -358,9 +416,9 @@ public class OrderFrame extends JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JCheckBox RBselesaiMakan;
     private javax.swing.JTable TabelStatusPesanan;
     private javax.swing.JButton btnKeluar;
+    private javax.swing.JCheckBox btnSelesaiMakan;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

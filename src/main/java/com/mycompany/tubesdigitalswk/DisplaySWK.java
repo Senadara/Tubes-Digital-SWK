@@ -178,7 +178,7 @@ public class DisplaySWK extends javax.swing.JFrame {
                 Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
             }
         }else{
-                String kueri = "Select * from menu;";
+                String kueri = "Select * from menu m INNER JOIN stan s ON s.ID_Stan = m.ID_Stan WHERE s.status = 1;";
             try {
                 PreparedStatement ps = con.prepareStatement(kueri);
                 ResultSet rs = ps.executeQuery();
@@ -524,10 +524,13 @@ private String getNewIDTransaksi() {
     private void uploadTransaksi(String id) {
         ArrayList<Keranjang> newKrnjg = new ArrayList<>();
         String kueri;
+        String noMeja;
         if(meja != null){
-        kueri = "INSERT INTO pesanan (ID_Transaksi, ID_Menu, Jumlah, ID_Customer, Total_Harga, Jam_Pemesanan, ID_Meja) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        kueri = "INSERT INTO pesanan (ID_Transaksi, ID_Menu, Jumlah, ID_Customer, Total_Harga, Jam_Pemesanan, catatan, ID_Meja) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        noMeja = meja.getNo();
         }else{
-            kueri = "INSERT INTO pesanan (ID_Transaksi, ID_Menu, Jumlah, ID_Customer, Total_Harga, Jam_Pemesanan) VALUES (?, ?, ?, ?, ?, ?)";
+            kueri = "INSERT INTO pesanan (ID_Transaksi, ID_Menu, Jumlah, ID_Customer, Total_Harga, Jam_Pemesanan, catatan) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            noMeja = "-";
         }
         LocalTime waktuFilter = LocalTime.now();
         cekCustomer();
@@ -543,8 +546,9 @@ private String getNewIDTransaksi() {
                 ps.setInt(4, idCustomer);
                 ps.setFloat(5, k.getHarga());
                 ps.setTime(6, java.sql.Time.valueOf(waktuFilter));
+                ps.setString(7, k.getCatatan());
                 if(meja != null){
-                    ps.setString(7, meja.getIdMeja());
+                    ps.setString(8, meja.getIdMeja());
                 }
 
                 ps.executeUpdate();
@@ -552,8 +556,10 @@ private String getNewIDTransaksi() {
             }
             if (i != 0){
             JOptionPane.showMessageDialog(this, "Mohon Menunggu Pesanan Anda");
-            OrderFrame of = new OrderFrame();
+            
+            OrderFrame of = new OrderFrame(id, customer.getNama(), customer.getNoTelp(), meja.getNo(), Float.toString(tHarga));
             of.setVisible(true);
+            
             krnjg = newKrnjg;
             tampilKeranjang();
             }else{
@@ -778,9 +784,9 @@ private String getNewIDTransaksi() {
         if(con != null){
             String kueri;
             if(tampilan == 0){
-             kueri = "SELECT t.ID_Transaksi, t.Tanggal_Pesanan, c.Nama_Customer, m.ID_Stan FROM transaksi t INNER JOIN pesanan p ON p.ID_Transaksi = t.ID_Transaksi INNER JOIN menu m ON m.ID_Menu = p.ID_Menu INNER JOIN customer c ON c.ID_Customer = p.ID_Customer WHERE m.ID_Stan = ? AND p.status = 0 GROUP BY t.ID_Transaksi;" ;
+             kueri = "SELECT t.ID_Transaksi, t.Tanggal_Pesanan, c.Nama_Customer, m.ID_Stan FROM transaksi t INNER JOIN pesanan p ON p.ID_Transaksi = t.ID_Transaksi INNER JOIN menu m ON m.ID_Menu = p.ID_Menu INNER JOIN customer c ON c.ID_Customer = p.ID_Customer WHERE m.ID_Stan = ? AND p.status = 0 OR p.status = 1 GROUP BY t.ID_Transaksi;" ;
             }else{
-             kueri = "SELECT t.ID_Transaksi, t.Tanggal_Pesanan, c.Nama_Customer, m.ID_Stan FROM transaksi t INNER JOIN pesanan p ON p.ID_Transaksi = t.ID_Transaksi INNER JOIN menu m ON m.ID_Menu = p.ID_Menu INNER JOIN customer c ON c.ID_Customer = p.ID_Customer WHERE m.ID_Stan = ? AND p.status = 1 GROUP BY t.ID_Transaksi;" ;
+             kueri = "SELECT t.ID_Transaksi, t.Tanggal_Pesanan, c.Nama_Customer, m.ID_Stan FROM transaksi t INNER JOIN pesanan p ON p.ID_Transaksi = t.ID_Transaksi INNER JOIN menu m ON m.ID_Menu = p.ID_Menu INNER JOIN customer c ON c.ID_Customer = p.ID_Customer WHERE m.ID_Stan = ? AND p.status = 3 GROUP BY t.ID_Transaksi;" ;
             }
             try{
                 PreparedStatement ps = con.prepareStatement(kueri);
@@ -794,6 +800,9 @@ private String getNewIDTransaksi() {
                                       
                    modelTransaksi.addRow(new Object []{idTransaksi, tanggalTransaksi, namaCustomer});
                 }
+                
+                rs.close();
+                ps.close();
             }catch (SQLException ex) {
                 Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
             } 
@@ -806,7 +815,7 @@ private String getNewIDTransaksi() {
        ArrayList<StatusCooking> scking = new ArrayList<>();
             if (con != null) {
                 if(tampilan == 1){
-                String kueri = "SELECT c.Nama_Customer, p.ID_Meja, m.Nama, p.Jumlah, p.Total_Harga, p.catatan , p.Jam_Pemesanan, p.status, p.ID_Pesanan FROM pesanan p INNER JOIN menu m ON p.ID_Menu = m.ID_Menu INNER JOIN customer c ON p.ID_Customer = c.ID_Customer WHERE m.ID_Stan = ? AND p.status = 0 ORDER BY Jam_Pemesanan ASC;";
+                String kueri = "SELECT c.Nama_Customer, p.ID_Meja, m.Nama, p.Jumlah, p.Total_Harga, p.catatan , p.Jam_Pemesanan, p.status, p.ID_Pesanan FROM pesanan p INNER JOIN menu m ON p.ID_Menu = m.ID_Menu INNER JOIN customer c ON p.ID_Customer = c.ID_Customer WHERE m.ID_Stan = ? AND p.status = 0 OR p.status = 1 ORDER BY Jam_Pemesanan ASC;";
                 try {
                 PreparedStatement ps = con.prepareStatement(kueri);
                 ps.setInt(1, seller.getID());
@@ -839,7 +848,7 @@ private String getNewIDTransaksi() {
             Logger.getLogger(DisplaySWK.class.getName()).log(Level.SEVERE, null, ex);
         }
         }else{
-              String kueri = "SELECT c.Nama_Customer, p.ID_Meja, m.Nama, p.Jumlah, p.Total_Harga, p.catatan , p.Jam_Pemesanan, p.status, p.ID_Pesanan, p.ID_Transaksi FROM pesanan p INNER JOIN menu m ON p.ID_Menu = m.ID_Menu INNER JOIN customer c ON p.ID_Customer = c.ID_Customer WHERE m.ID_Stan = ? AND p.status = 0 AND p.ID_Transaksi = ? ORDER BY Jam_Pemesanan ASC;";
+              String kueri = "SELECT c.Nama_Customer, p.ID_Meja, m.Nama, p.Jumlah, p.Total_Harga, p.catatan , p.Jam_Pemesanan, p.status, p.ID_Pesanan, p.ID_Transaksi FROM pesanan p INNER JOIN menu m ON p.ID_Menu = m.ID_Menu INNER JOIN customer c ON p.ID_Customer = c.ID_Customer WHERE m.ID_Stan = ? AND p.status = 0 OR p.status = 1 AND p.ID_Transaksi = ? ORDER BY Jam_Pemesanan ASC;";
                 try {
                 PreparedStatement ps = con.prepareStatement(kueri);
                 ps.setInt(1, seller.getID());
@@ -2483,16 +2492,21 @@ private String getNewIDTransaksi() {
         String nama = TabelMenuMinuman.getValueAt(barisTerpilih, 2).toString();
         int jumlah = Integer.parseInt(TFJumlahBeliMinuman.getText());
         float harga = Float.parseFloat(TabelMenuMinuman.getValueAt(barisTerpilih, 3).toString());
+        String status = TabelMenuMakanan.getValueAt(barisTerpilih, 4).toString();
         String catatan = TFCatatanMinuman.getText();
         if (catatan.length() == 0) {
             catatan = " ";
         }
 
+        if (status.equals("Tersedia")){
         Keranjang keranjang = new Keranjang(idStan, idMinuman, nama, jumlah, harga, catatan);
         krnjg.add(keranjang);
         tampilKeranjang();
         TFCatatanMinuman.setText("");
         TFJumlahBeliMinuman.setText("");
+        }else{
+            JOptionPane.showMessageDialog(this, "Mohon Maaf Menu Habis");
+        }
     }//GEN-LAST:event_ButtonKeranjangMinumanActionPerformed
 
     private void ButtonKeranjangMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonKeranjangMakananActionPerformed
@@ -2505,15 +2519,20 @@ private String getNewIDTransaksi() {
         int jumlah = Integer.parseInt(TFJumlahBeliMakan.getText());
         float harga = Float.parseFloat(TabelMenuMakanan.getValueAt(barisTerpilih, 3).toString());
         String catatan = TFCatatanMakanan.getText();
+        String status = TabelMenuMakanan.getValueAt(barisTerpilih, 4).toString();
         if (catatan.length() == 0) {
             catatan = " ";
         }
-
+        
+        if(status.equals("Tersedia")){
         Keranjang keranjang = new Keranjang(idStan, idMakanan, nama, jumlah, harga, catatan);
         krnjg.add(keranjang);
         tampilKeranjang();
         TFCatatanMakanan.setText("");
         TFJumlahBeliMakan.setText("");
+        }else{
+            JOptionPane.showMessageDialog(this, "Mohon Maaf Menu Habis");
+        }
     }//GEN-LAST:event_ButtonKeranjangMakananActionPerformed
 
     private void TFCatatanMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFCatatanMakananActionPerformed
@@ -2524,12 +2543,18 @@ private String getNewIDTransaksi() {
         // TODO add your handling code here:
         int barisTerpilih = TabelStan.getSelectedRow();
         String keyword = modelStan.getValueAt(barisTerpilih, 1).toString();
+        String status = modelStan.getValueAt(barisTerpilih, 3).toString();
+        System.out.println(status);
         if (keyword.length() == 0) {
             loadMenu(2);
             tampilMakanan();
             tampilMinuman();
         } else {
+            if(status.equals("Buka")){
             cariMenuByKeyword(3, 1, keyword);
+            }else{
+                JOptionPane.showMessageDialog(this, "Maaf Stand Sedang Tutup");
+            }
         }
 
     }//GEN-LAST:event_btnTampilkanMenuActionPerformed
@@ -2768,7 +2793,9 @@ private String getNewIDTransaksi() {
         // TODO add your handling code here:
         
         ProsesPesanan pp = new ProsesPesanan(sc);
+        modelPesanan.setRowCount(0);
         pp.setVisible(true);
+        
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed

@@ -87,7 +87,7 @@
                               <Group type="102" attributes="0">
                                   <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="RBselesaiMakan" min="-2" max="-2" attributes="0"/>
+                                  <Component id="btnSelesaiMakan" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <Component id="btnKeluar" min="-2" max="-2" attributes="0"/>
                           </Group>
@@ -124,7 +124,7 @@
                           <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Component id="jLabel8" max="32767" attributes="0"/>
-                              <Component id="RBselesaiMakan" pref="0" max="32767" attributes="0"/>
+                              <Component id="btnSelesaiMakan" pref="0" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="btnKeluar" min="-2" max="-2" attributes="0"/>
@@ -271,6 +271,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="tfNamaCustomer">
               <Properties>
+                <Property name="editable" type="boolean" value="false"/>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.MatteColorBorderInfo">
                     <MatteColorBorder>
@@ -282,6 +283,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="tfNomorCustomer">
               <Properties>
+                <Property name="editable" type="boolean" value="false"/>
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="16" green="92" red="d8" type="rgb"/>
                 </Property>
@@ -310,6 +312,7 @@
             </Component>
             <Component class="javax.swing.JTextField" name="tfNomorMejaCustomer">
               <Properties>
+                <Property name="editable" type="boolean" value="false"/>
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="16" green="92" red="d8" type="rgb"/>
                 </Property>
@@ -351,6 +354,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="tfJumlahPembayaran">
           <Properties>
+            <Property name="editable" type="boolean" value="false"/>
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="16" green="92" red="d8" type="rgb"/>
             </Property>
@@ -393,7 +397,7 @@
             <Property name="text" type="java.lang.String" value="SUDAH SELESAI MAKAN ?"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="RBselesaiMakan">
+        <Component class="javax.swing.JCheckBox" name="btnSelesaiMakan">
         </Component>
         <Component class="javax.swing.JSeparator" name="jSeparator1">
         </Component>
