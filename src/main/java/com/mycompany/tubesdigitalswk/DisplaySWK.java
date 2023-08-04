@@ -1062,6 +1062,7 @@ private void shutdown() {
         jLabel37 = new javax.swing.JLabel();
         jButton4 = new javax.swing.JButton();
         jButton9 = new javax.swing.JButton();
+        jButton15 = new javax.swing.JButton();
         PaneLoginSeller = new javax.swing.JScrollPane();
         jPanel10 = new javax.swing.JPanel();
         jLabel21 = new javax.swing.JLabel();
@@ -1253,7 +1254,6 @@ private void shutdown() {
 
         jPanel1.setBackground(new java.awt.Color(0, 129, 138));
 
-        btnBooking.setFont(new java.awt.Font("Trebuchet MS", 0, 18)); // NOI18N
         btnBooking.setText("Booking");
         btnBooking.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1424,6 +1424,13 @@ private void shutdown() {
             }
         });
 
+        jButton15.setText("Refresh");
+        jButton15.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton15ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -1443,7 +1450,10 @@ private void shutdown() {
                         .addGap(336, 336, 336)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(btnBooking)
+                                .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addComponent(jButton15)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(btnBooking))
                                 .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 556, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(193, 193, 193)
@@ -1470,7 +1480,9 @@ private void shutdown() {
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane9, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(btnBooking)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnBooking)
+                    .addComponent(jButton15))
                 .addGap(69, 69, 69)
                 .addComponent(jLabel26)
                 .addGap(8, 8, 8)
@@ -3072,6 +3084,12 @@ private void shutdown() {
         backToLogin();
     }//GEN-LAST:event_jButton14ActionPerformed
 
+    private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
+        // TODO add your handling code here:
+        loadBookingMeja();
+        tampilBooking();
+    }//GEN-LAST:event_jButton15ActionPerformed
+
 
     
     /**
@@ -3142,6 +3160,7 @@ private void shutdown() {
     private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton13;
     private javax.swing.JButton jButton14;
+    private javax.swing.JButton jButton15;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
