@@ -78,7 +78,7 @@ public class OrderFrame extends JFrame {
         if(con != null){
             boolean checkbox = btnSelesaiMakan.isSelected();
             if(checkbox){
-            String kueri = "UPDATE pesanan p INNER JOIN meja m ON p.ID_Meja = m.ID_Meja SET p.status = '3', m.Status = '1' WHERE p.ID_Transaksi = ? ;";
+            String kueri = "UPDATE pesanan p INNER JOIN meja m ON p.ID_Meja = m.ID_Meja SET p.status = '3', m.Status = '2' WHERE p.ID_Transaksi = ? ;";
             try{
             PreparedStatement ps = con.prepareStatement(kueri);
             ps.setString(1, idTransaksi);

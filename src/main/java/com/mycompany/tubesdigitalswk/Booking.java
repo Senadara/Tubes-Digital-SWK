@@ -40,4 +40,16 @@ public class Booking {
         return stts;
     }
     
+    String getStatusMeja(){
+        String stts;
+        if(status == 1){
+            stts = "Tersedia";
+        } else if(status == 2){
+            stts = "Selesai Makan";
+        }else{
+            stts = "Digunakan";
+        }
+        return stts;
+    }
+    
 }

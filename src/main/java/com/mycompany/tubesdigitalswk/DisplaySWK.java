@@ -113,6 +113,7 @@ public class DisplaySWK extends javax.swing.JFrame {
         modelMeja.addColumn("ID Meja");
         modelMeja.addColumn("Status");
         jtBooking.setModel(modelMeja);
+        TabelMeja2.setModel(modelMeja);
     }
     
     private void loadKolomTransaksi(){
@@ -275,6 +276,13 @@ public class DisplaySWK extends javax.swing.JFrame {
         modelMeja.setRowCount(0);
         for(Booking b: bm){
             modelMeja.addRow(new Object [] {b.getNomorMeja(), b.getJumlahKursi(), b.getID(), b.getStatus()});
+        }
+    }
+    
+    private void tampilStatusMeja(){
+        modelMeja.setRowCount(0);
+        for(Booking b:bm){
+            modelMeja.addRow(new Object [] {b.getNomorMeja(), b.getJumlahKursi(), b.getID(), b.getStatusMeja()});
         }
     }
 
@@ -742,20 +750,17 @@ private String getNewIDTransaksi() {
         Timer timer = new Timer(5000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                loadTransaksi(0);
+                loadTransaksi();
             }
         });
         timer.start();
     }
     
-    private void loadTransaksi(int tampilan){
+    private void loadTransaksi(){
         if(con != null){
             String kueri;
-            if(tampilan == 0){
              kueri = "SELECT t.ID_Transaksi, t.Tanggal_Pesanan, c.Nama_Customer, m.ID_Stan FROM transaksi t INNER JOIN pesanan p ON p.ID_Transaksi = t.ID_Transaksi INNER JOIN menu m ON m.ID_Menu = p.ID_Menu INNER JOIN customer c ON c.ID_Customer = p.ID_Customer WHERE m.ID_Stan = ? AND p.status = 0 OR p.status = 1 GROUP BY t.ID_Transaksi;" ;
-            }else{
-             kueri = "SELECT t.ID_Transaksi, t.Tanggal_Pesanan, c.Nama_Customer, m.ID_Stan FROM transaksi t INNER JOIN pesanan p ON p.ID_Transaksi = t.ID_Transaksi INNER JOIN menu m ON m.ID_Menu = p.ID_Menu INNER JOIN customer c ON c.ID_Customer = p.ID_Customer WHERE m.ID_Stan = ? AND p.status = 3 GROUP BY t.ID_Transaksi;" ;
-            }
+            
             try{
                 PreparedStatement ps = con.prepareStatement(kueri);
                 ps.setInt(1, seller.getID());
@@ -938,6 +943,44 @@ private void shutdown() {
         });
     }
     
+    public void updateMeja() {
+        // Timer untuk polling setiap 5 detik
+        Timer timer = new Timer(10000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loadBookingMeja();
+                tampilStatusMeja();
+            }
+        });
+        timer.start();
+    }
+    
+    private void ubahStatusMeja(int status, int idMeja){
+        if(con != null){
+            int pil = JOptionPane.showConfirmDialog(this, "Anda Yakin ingin mengubah status meja?", 
+                "Perhatian", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+            
+            if(pil == JOptionPane.OK_OPTION){
+            String kueri = "UPDATE meja set Status = ? WHERE ID_Meja = ? ;";
+            try{
+            PreparedStatement ps = con.prepareStatement(kueri);
+            ps.setInt(1, status);
+            ps.setInt(2, idMeja);
+            int rowsUpdated = ps.executeUpdate();
+                if (rowsUpdated > 0) {
+                    JOptionPane.showMessageDialog(this, "Berhasil Merubah status");
+                    loadBookingMeja();
+                    tampilStatusMeja();
+                }
+            ps.close();
+            
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, ex);
+            }            
+            }
+        }
+    }
+    
        /**
      * Creates new form DisplaySWK
      */
@@ -972,6 +1015,8 @@ private void shutdown() {
         tampilMakanan();
         tampilMinuman();
     }
+    
+    
 
 
     /**
@@ -1072,6 +1117,7 @@ private void shutdown() {
         jButton11 = new javax.swing.JButton();
         jButton12 = new javax.swing.JButton();
         jLabel41 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
         PanePesanMakan = new javax.swing.JScrollPane();
         panelPesanan = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -1122,6 +1168,19 @@ private void shutdown() {
         TFCariMinum = new javax.swing.JTextField();
         btnCariMakan = new javax.swing.JButton();
         btnCariMinum = new javax.swing.JButton();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        jPanel7 = new javax.swing.JPanel();
+        jScrollPane13 = new javax.swing.JScrollPane();
+        TabelMeja2 = new javax.swing.JTable();
+        jLabel42 = new javax.swing.JLabel();
+        btnBooking1 = new javax.swing.JButton();
+        jLabel43 = new javax.swing.JLabel();
+        jButton13 = new javax.swing.JButton();
+        jLabel44 = new javax.swing.JLabel();
+        jSeparator7 = new javax.swing.JSeparator();
+        jLabel45 = new javax.swing.JLabel();
+        LabelNama = new javax.swing.JLabel();
+        jButton14 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -1830,6 +1889,15 @@ private void shutdown() {
         jLabel41.setForeground(new java.awt.Color(255, 255, 255));
         jLabel41.setText("Tampilkan detail pesanan :");
 
+        jButton1.setBackground(new java.awt.Color(255, 255, 153));
+        jButton1.setForeground(new java.awt.Color(255, 102, 102));
+        jButton1.setText("Histori Transaksi");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
         jPanel11.setLayout(jPanel11Layout);
         jPanel11Layout.setHorizontalGroup(
@@ -1862,7 +1930,9 @@ private void shutdown() {
                                 .addGroup(jPanel11Layout.createSequentialGroup()
                                     .addComponent(jLabel20)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(TBStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(TBStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jButton1))
                                 .addComponent(jLabel36)
                                 .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel11Layout.createSequentialGroup()
@@ -1919,7 +1989,8 @@ private void shutdown() {
                     .addGroup(jPanel11Layout.createSequentialGroup()
                         .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel20)
-                            .addComponent(TBStatus))
+                            .addComponent(TBStatus)
+                            .addComponent(jButton1))
                         .addGap(18, 18, 18)
                         .addComponent(jLabel36)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2421,6 +2492,124 @@ private void shutdown() {
 
         jTabbedPane.addTab("tab4", PanePesanMakan);
 
+        jScrollPane6.setBackground(new java.awt.Color(0, 129, 138));
+
+        jPanel7.setBackground(new java.awt.Color(0, 129, 138));
+
+        TabelMeja2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "No. Meja", "Jumlah Kursi", "Status"
+            }
+        ));
+        jScrollPane13.setViewportView(TabelMeja2);
+
+        jLabel42.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel42.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel42.setText("STATUS MEJA");
+
+        btnBooking1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnBooking1.setText("Tersedia");
+        btnBooking1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBooking1ActionPerformed(evt);
+            }
+        });
+
+        jLabel43.setText("Ubah Status :");
+
+        jButton13.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton13.setText("Digunakan");
+        jButton13.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton13ActionPerformed(evt);
+            }
+        });
+
+        jLabel44.setFont(new java.awt.Font("Trebuchet MS", 1, 36)); // NOI18N
+        jLabel44.setForeground(new java.awt.Color(255, 153, 0));
+        jLabel44.setText("DIGITAL SWK");
+
+        jLabel45.setFont(new java.awt.Font("Trebuchet MS", 1, 24)); // NOI18N
+        jLabel45.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel45.setText("SELAMAT DATANG ");
+
+        LabelNama.setFont(new java.awt.Font("Trebuchet MS", 1, 24)); // NOI18N
+        LabelNama.setForeground(new java.awt.Color(255, 204, 102));
+        LabelNama.setText("SELAMAT DATANG ");
+
+        jButton14.setBackground(new java.awt.Color(255, 102, 102));
+        jButton14.setText("Back to Login Page");
+        jButton14.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton14ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addComponent(jButton14)
+                        .addGap(212, 212, 212)
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                .addGap(191, 191, 191)
+                                .addComponent(jLabel42))
+                            .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(jPanel7Layout.createSequentialGroup()
+                                    .addComponent(jLabel43)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(btnBooking1, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jButton13)
+                                    .addGap(12, 12, 12))
+                                .addComponent(jScrollPane13, javax.swing.GroupLayout.PREFERRED_SIZE, 556, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(jLabel44)
+                    .addComponent(jSeparator7, javax.swing.GroupLayout.PREFERRED_SIZE, 1289, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addComponent(jLabel45)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(LabelNama)))
+                .addContainerGap(15, Short.MAX_VALUE))
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel44)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator7, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel45)
+                    .addComponent(LabelNama))
+                .addGap(25, 25, 25)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel42)
+                    .addComponent(jButton14))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane13, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel43)
+                    .addComponent(jButton13)
+                    .addComponent(btnBooking1))
+                .addContainerGap(662, Short.MAX_VALUE))
+        );
+
+        jScrollPane6.setViewportView(jPanel7);
+
+        jTabbedPane.addTab("tab6", jScrollPane6);
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -2479,7 +2668,6 @@ private void shutdown() {
             tampilMakanan();
 
         }
-
     }//GEN-LAST:event_btnCariMakanActionPerformed
 
     private void btnCariStanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariStanActionPerformed
@@ -2499,34 +2687,43 @@ private void shutdown() {
         reset();
     }//GEN-LAST:event_btnResetActionPerformed
 
-    private void ButtonHapusPesananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonHapusPesananActionPerformed
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         // TODO add your handling code here:
-        int baris = TabelKeranjang.getSelectedRow();
-        int pil = JOptionPane.showConfirmDialog(this, "Anda Yakin ingin Menghapus pesanan ini?", 
-                "Perhatian", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
-        
-        if (pil == JOptionPane.OK_OPTION){
-             krnjg.remove(baris);
-             tampilKeranjang();
-        }
-    }//GEN-LAST:event_ButtonHapusPesananActionPerformed
+        backToLogin();
+    }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // TODO add your handling code here:
         buatTransaksi();
     }//GEN-LAST:event_jButton6ActionPerformed
 
-    private void TFNoTelpCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFNoTelpCustomerActionPerformed
+    private void TFTotalHargaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFTotalHargaActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_TFNoTelpCustomerActionPerformed
+    }//GEN-LAST:event_TFTotalHargaActionPerformed
 
     private void TFNomorMejaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFNomorMejaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_TFNomorMejaActionPerformed
 
-    private void TFTotalHargaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFTotalHargaActionPerformed
+    private void TFNamaCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFNamaCustomerActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_TFTotalHargaActionPerformed
+    }//GEN-LAST:event_TFNamaCustomerActionPerformed
+
+    private void TFNoTelpCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFNoTelpCustomerActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TFNoTelpCustomerActionPerformed
+
+    private void ButtonHapusPesananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonHapusPesananActionPerformed
+        // TODO add your handling code here:
+        int baris = TabelKeranjang.getSelectedRow();
+        int pil = JOptionPane.showConfirmDialog(this, "Anda Yakin ingin Menghapus pesanan ini?",
+            "Perhatian", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+
+        if (pil == JOptionPane.OK_OPTION){
+            krnjg.remove(baris);
+            tampilKeranjang();
+        }
+    }//GEN-LAST:event_ButtonHapusPesananActionPerformed
 
     private void TFJumlahBeliMakanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFJumlahBeliMakanActionPerformed
         // TODO add your handling code here:
@@ -2547,11 +2744,11 @@ private void shutdown() {
         }
 
         if (status.equals("Tersedia")){
-        Keranjang keranjang = new Keranjang(idStan, idMinuman, nama, jumlah, harga, catatan);
-        krnjg.add(keranjang);
-        tampilKeranjang();
-        TFCatatanMinuman.setText("");
-        TFJumlahBeliMinuman.setText("");
+            Keranjang keranjang = new Keranjang(idStan, idMinuman, nama, jumlah, harga, catatan);
+            krnjg.add(keranjang);
+            tampilKeranjang();
+            TFCatatanMinuman.setText("");
+            TFJumlahBeliMinuman.setText("");
         }else{
             JOptionPane.showMessageDialog(this, "Mohon Maaf Menu Habis");
         }
@@ -2571,13 +2768,13 @@ private void shutdown() {
         if (catatan.length() == 0) {
             catatan = " ";
         }
-        
+
         if(status.equals("Tersedia")){
-        Keranjang keranjang = new Keranjang(idStan, idMakanan, nama, jumlah, harga, catatan);
-        krnjg.add(keranjang);
-        tampilKeranjang();
-        TFCatatanMakanan.setText("");
-        TFJumlahBeliMakan.setText("");
+            Keranjang keranjang = new Keranjang(idStan, idMakanan, nama, jumlah, harga, catatan);
+            krnjg.add(keranjang);
+            tampilKeranjang();
+            TFCatatanMakanan.setText("");
+            TFJumlahBeliMakan.setText("");
         }else{
             JOptionPane.showMessageDialog(this, "Mohon Maaf Menu Habis");
         }
@@ -2599,47 +2796,65 @@ private void shutdown() {
             tampilMinuman();
         } else {
             if(status.equals("Buka")){
-            cariMenuByKeyword(3, 1, keyword);
+                cariMenuByKeyword(3, 1, keyword);
             }else{
                 JOptionPane.showMessageDialog(this, "Maaf Stand Sedang Tutup");
             }
         }
-
     }//GEN-LAST:event_btnTampilkanMenuActionPerformed
 
-    private void TFNamaCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFNamaCustomerActionPerformed
+    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_TFNamaCustomerActionPerformed
+        updateTablePesanan(1," ");
+    }//GEN-LAST:event_jButton12ActionPerformed
 
-    private void btnLanjutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLanjutActionPerformed
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
         // TODO add your handling code here:
-        String login = cbPilihan.getSelectedItem().toString();
+        int barisTerpilih = TableTransaksi.getSelectedRow();
+        String idTransaksi = TableTransaksi.getValueAt(barisTerpilih, 0).toString();
+        updateTablePesanan(2,idTransaksi);
+    }//GEN-LAST:event_jButton11ActionPerformed
 
-        if (login.equals("Customer")) {
-            JOptionPane.showMessageDialog(this, "Masuk Sebagai Customer");
-            jTabbedPane.setSelectedIndex(1);
-        } else if (login.equals("Seller")) {
-            JOptionPane.showMessageDialog(this, "Masuk Sebagai Seller");
-            jTabbedPane.setSelectedIndex(2);
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        // TODO add your handling code here:
+        backToLogin();
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+        tfNamaMenu.setText("");
+        tfHargaMenu.setText("");
+        btnSubmitMenu.setText("Submit");
+        buttonGroup.clearSelection();
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void TBStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TBStatusActionPerformed
+        // TODO add your handling code here:
+        statusStan();
+    }//GEN-LAST:event_TBStatusActionPerformed
+
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+        // TODO add your handling code here:
+        if(modelPesanan.getColumnCount() > 0){
+            ProsesPesanan pp = new ProsesPesanan(sc);
+            modelPesanan.setRowCount(0);
+            pp.setVisible(true);
+        }else{
+            JOptionPane.showMessageDialog(this, "Maaf Tabel Detail Pesanan Belum Terisi");
         }
-        
-         
-    }//GEN-LAST:event_btnLanjutActionPerformed
 
-    private void cbPilihanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPilihanActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cbPilihanActionPerformed
+    }//GEN-LAST:event_jButton10ActionPerformed
 
     private void btnHapusMakanan1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusMakanan1ActionPerformed
         // TODO add your handling code here:
         int barisTerpilih = TabelEditMinuman.getSelectedRow();
         int idMenu = Integer.parseInt(TabelEditMinuman.getValueAt(barisTerpilih, 1).toString());
-        int pil = JOptionPane.showConfirmDialog(this, "Anda Yakin ingin Menghapus Menu ini?", 
-                "Perhatian", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
-        
+        int pil = JOptionPane.showConfirmDialog(this, "Anda Yakin ingin Menghapus Menu ini?",
+            "Perhatian", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+
         if (pil == JOptionPane.OK_OPTION){
-             deleteMenu(idMenu);
-             loadMenu(1);
+            deleteMenu(idMenu);
+            loadMenu(1);
             tampilMinuman();
         }
     }//GEN-LAST:event_btnHapusMakanan1ActionPerformed
@@ -2650,11 +2865,6 @@ private void shutdown() {
         fungsiEditMenuMinuman();
         btnSubmitMenu.setText("Ubah");
     }//GEN-LAST:event_btnEditMinumanActionPerformed
-
-    private void TBStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TBStatusActionPerformed
-        // TODO add your handling code here:
-        statusStan();
-    }//GEN-LAST:event_TBStatusActionPerformed
 
     private void btnSubmitMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSubmitMenuActionPerformed
         // TODO add your handling code here:
@@ -2669,14 +2879,14 @@ private void shutdown() {
         // TODO add your handling code here:
         int barisTerpilih = TabelEditMakanan.getSelectedRow();
         int idMenu = Integer.parseInt(TabelEditMakanan.getValueAt(barisTerpilih, 1).toString());
-        int pil = JOptionPane.showConfirmDialog(this, "Anda Yakin ingin Menghapus Menu ini?", 
-                "Perhatian", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
-        
+        int pil = JOptionPane.showConfirmDialog(this, "Anda Yakin ingin Menghapus Menu ini?",
+            "Perhatian", JOptionPane.OK_CANCEL_OPTION, JOptionPane.ERROR_MESSAGE);
+
         if (pil == JOptionPane.OK_OPTION){
-             deleteMenu(idMenu);
-             loadMenu(1);
+            deleteMenu(idMenu);
+            loadMenu(1);
             tampilMakanan();;
-        }       
+        }
     }//GEN-LAST:event_btnHapusMakananActionPerformed
 
     private void btnEditMakananActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditMakananActionPerformed
@@ -2685,6 +2895,10 @@ private void shutdown() {
         fungsiEditMenuMakanan();
         btnSubmitMenu.setText("Ubah");
     }//GEN-LAST:event_btnEditMakananActionPerformed
+
+    private void RBJenisMakanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RBJenisMakanActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_RBJenisMakanActionPerformed
 
     private void cbStatusMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbStatusMenuActionPerformed
         // TODO add your handling code here:
@@ -2698,12 +2912,30 @@ private void shutdown() {
         // TODO add your handling code here:
     }//GEN-LAST:event_tfNamaMenuActionPerformed
 
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        backToLogin();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void TFEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFEmailActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TFEmailActionPerformed
+
+    private void btnAdminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdminActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnAdminActionPerformed
+
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         // TODO add your handling code here:
         String email = TFEmail.getText();
         String pass = TFPassword.getText();
         login(email,pass);
-        if (seller != null){
+        int id = seller.getID();
+        if (seller != null && id == 2000){
+            jTabbedPane.setSelectedIndex(5);
+            updateMeja();
+            tampilStatusMeja();
+        }else if(seller != null && id != 2000){
             txtNamaStan.setText(seller.getNama());
             jTabbedPane.setSelectedIndex(3);
             updatePesanan();
@@ -2711,115 +2943,11 @@ private void shutdown() {
             tampilMakanan();
             tampilMinuman();
             statusStan();
-
         }else{
-            
+            JOptionPane.showMessageDialog(this, "Maaf Akun salah atau Tidak tersedia");
         }
-        
+
     }//GEN-LAST:event_btnLoginActionPerformed
-
-    private void btnAdminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdminActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnAdminActionPerformed
-
-    private void TFEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFEmailActionPerformed
-        // TODO add your handling code here:
-
-    }//GEN-LAST:event_TFEmailActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-        backToLogin();
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void RBJenisMakanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RBJenisMakanActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_RBJenisMakanActionPerformed
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-        backToLogin();
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void btnBookingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBookingActionPerformed
-        // TODO add your handling code here:
-         int barisTerpilih = jtBooking.getSelectedRow();
-         String idMeja = modelMeja.getValueAt(barisTerpilih, 2).toString();
-         String no = modelMeja.getValueAt(barisTerpilih, 0).toString();
-         String kursi = modelMeja.getValueAt(barisTerpilih, 1).toString();
-         String status = modelMeja.getValueAt(barisTerpilih, 3).toString();
-         if(status != "Booked"){
-            meja = new Meja(idMeja, no, kursi);
-            TFMeja.setText(idMeja);
-            TFNoMeja.setText(no);
-            TFKursi.setText(kursi);  
-         }else{
-             JOptionPane.showMessageDialog(this, "Mohon Maaf Meja Telah Terbooking");
-         }
-         
-        
-    }//GEN-LAST:event_btnBookingActionPerformed
-
-    private void TFNoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFNoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_TFNoActionPerformed
-
-    private void TFKursiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFKursiActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_TFKursiActionPerformed
-
-    private void TFMejaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFMejaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_TFMejaActionPerformed
-
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
-        String booking = cbPesanan.getSelectedItem().toString();
-        String nama = TFNama.getText();
-        String no =TFNo.getText();
-        
-        if(nama.trim().isEmpty() || no.trim().isEmpty() ){
-            JOptionPane.showMessageDialog(this, "Mohon Untuk Mengisi Nama dan Nomor Telefon"); 
-        }else{
-            if (booking.equals("On Site")){              
-                customer = new Customer(nama, no );
-                bookingMeja(1);
-                TFNamaCustomer.setText(nama);
-                TFNoTelpCustomer.setText(no);
-                TFNomorMeja.setText(TFMeja.getText());
-                jTabbedPane.setSelectedIndex(4);
-                
-            }else if(booking.equals("Take Away")){
-                customer = new Customer(nama, no);
-                JOptionPane.showMessageDialog(this, "Silahkan memesan makanan");
-                TFNamaCustomer.setText(nama);
-                TFNoTelpCustomer.setText(no);
-                jTabbedPane.setSelectedIndex(4);
-            }
-        }     
-    }//GEN-LAST:event_jButton4ActionPerformed
-
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        // TODO add your handling code here:
-        tfNamaMenu.setText("");
-        tfHargaMenu.setText("");
-        btnSubmitMenu.setText("Submit");
-        buttonGroup.clearSelection();
-    }//GEN-LAST:event_jButton5ActionPerformed
-
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        // TODO add your handling code here:
-        backToLogin();
-    }//GEN-LAST:event_jButton7ActionPerformed
-
-    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        // TODO add your handling code here:
-        backToLogin();
-    }//GEN-LAST:event_jButton8ActionPerformed
-
-    private void TFNamaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFNamaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_TFNamaActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         // TODO add your handling code here:
@@ -2829,33 +2957,120 @@ private void shutdown() {
         TFMeja.setText("");
     }//GEN-LAST:event_jButton9ActionPerformed
 
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+        String booking = cbPesanan.getSelectedItem().toString();
+        String nama = TFNama.getText();
+        String no =TFNo.getText();
+
+        if(nama.trim().isEmpty() || no.trim().isEmpty() ){
+            JOptionPane.showMessageDialog(this, "Mohon Untuk Mengisi Nama dan Nomor Telefon");
+        }else{
+            if (booking.equals("On Site")){
+                customer = new Customer(nama, no );
+                bookingMeja(1);
+                TFNamaCustomer.setText(nama);
+                TFNoTelpCustomer.setText(no);
+                TFNomorMeja.setText(TFMeja.getText());
+                jTabbedPane.setSelectedIndex(4);
+
+            }else if(booking.equals("Take Away")){
+                customer = new Customer(nama, no);
+                JOptionPane.showMessageDialog(this, "Silahkan memesan makanan");
+                TFNamaCustomer.setText(nama);
+                TFNoTelpCustomer.setText(no);
+                jTabbedPane.setSelectedIndex(4);
+            }
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
+
     private void TFNoMejaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFNoMejaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_TFNoMejaActionPerformed
 
-    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+    private void TFMejaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFMejaActionPerformed
         // TODO add your handling code here:
-        if(modelPesanan.getColumnCount() > 0){
-        ProsesPesanan pp = new ProsesPesanan(sc);
-        modelPesanan.setRowCount(0);
-        pp.setVisible(true);
+    }//GEN-LAST:event_TFMejaActionPerformed
+
+    private void TFKursiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFKursiActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TFKursiActionPerformed
+
+    private void TFNoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFNoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TFNoActionPerformed
+
+    private void TFNamaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TFNamaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TFNamaActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        backToLogin();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void btnBookingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBookingActionPerformed
+        // TODO add your handling code here:
+        int barisTerpilih = jtBooking.getSelectedRow();
+        String idMeja = modelMeja.getValueAt(barisTerpilih, 2).toString();
+        String no = modelMeja.getValueAt(barisTerpilih, 0).toString();
+        String kursi = modelMeja.getValueAt(barisTerpilih, 1).toString();
+        String status = modelMeja.getValueAt(barisTerpilih, 3).toString();
+        if(status != "Booked"){
+            meja = new Meja(idMeja, no, kursi);
+            TFMeja.setText(idMeja);
+            TFNoMeja.setText(no);
+            TFKursi.setText(kursi);
         }else{
-            JOptionPane.showMessageDialog(this, "Maaf Tabel Detail Pesanan Belum Terisi");
+            JOptionPane.showMessageDialog(this, "Mohon Maaf Meja Telah Terbooking");
         }
-        
-    }//GEN-LAST:event_jButton10ActionPerformed
 
-    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-        // TODO add your handling code here:
-        int barisTerpilih = TableTransaksi.getSelectedRow();
-        String idTransaksi = TableTransaksi.getValueAt(barisTerpilih, 0).toString();
-        updateTablePesanan(2,idTransaksi);
-    }//GEN-LAST:event_jButton11ActionPerformed
+    }//GEN-LAST:event_btnBookingActionPerformed
 
-    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
+    private void btnLanjutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLanjutActionPerformed
         // TODO add your handling code here:
-        updateTablePesanan(1," ");
-    }//GEN-LAST:event_jButton12ActionPerformed
+        String login = cbPilihan.getSelectedItem().toString();
+
+        if (login.equals("Customer")) {
+            JOptionPane.showMessageDialog(this, "Masuk Sebagai Customer");
+            jTabbedPane.setSelectedIndex(1);
+        } else if (login.equals("Seller")) {
+            JOptionPane.showMessageDialog(this, "Masuk Sebagai Seller");
+            jTabbedPane.setSelectedIndex(2);
+        }
+
+    }//GEN-LAST:event_btnLanjutActionPerformed
+
+    private void cbPilihanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbPilihanActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbPilihanActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        HistoriTransaksi ht = new HistoriTransaksi(seller.getID());
+        ht.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void btnBooking1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBooking1ActionPerformed
+        // TODO add your handling code here:
+        int barisTerpilih = TabelMeja2.getSelectedRow();
+        int idMeja = TabelMeja2.getValueAt(barisTerpilih, 2).hashCode();
+        System.out.println(idMeja);
+        ubahStatusMeja(1,idMeja);
+    }//GEN-LAST:event_btnBooking1ActionPerformed
+
+    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
+        // TODO add your handling code here:
+          int barisTerpilih = TabelMeja2.getSelectedRow();
+        int idMeja = TabelMeja2.getValueAt(barisTerpilih, 2).hashCode();
+        System.out.println(idMeja);
+        ubahStatusMeja(0,idMeja);
+    }//GEN-LAST:event_jButton13ActionPerformed
+
+    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
+        // TODO add your handling code here:
+        backToLogin();
+    }//GEN-LAST:event_jButton14ActionPerformed
 
 
     
@@ -2867,6 +3082,7 @@ private void shutdown() {
     private javax.swing.JButton ButtonHapusPesanan;
     private javax.swing.JButton ButtonKeranjangMakanan;
     private javax.swing.JButton ButtonKeranjangMinuman;
+    private javax.swing.JLabel LabelNama;
     private javax.swing.JScrollPane PaneBookingMeja;
     private javax.swing.JScrollPane PaneLogin;
     private javax.swing.JScrollPane PaneLoginSeller;
@@ -2896,6 +3112,7 @@ private void shutdown() {
     private javax.swing.JTable TabelEditMakanan;
     private javax.swing.JTable TabelEditMinuman;
     private javax.swing.JTable TabelKeranjang;
+    private javax.swing.JTable TabelMeja2;
     private javax.swing.JTable TabelMenuMakanan;
     private javax.swing.JTable TabelMenuMinuman;
     private javax.swing.JTable TabelStan;
@@ -2903,6 +3120,7 @@ private void shutdown() {
     private javax.swing.JLabel Text;
     private javax.swing.JButton btnAdmin;
     private javax.swing.JButton btnBooking;
+    private javax.swing.JButton btnBooking1;
     private javax.swing.JButton btnCariMakan;
     private javax.swing.JButton btnCariMinum;
     private javax.swing.JButton btnCariStan;
@@ -2918,9 +3136,12 @@ private void shutdown() {
     private javax.swing.JComboBox<String> cbPesanan;
     private javax.swing.JComboBox<String> cbPilihan;
     private javax.swing.JComboBox<String> cbStatusMenu;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton12;
+    private javax.swing.JButton jButton13;
+    private javax.swing.JButton jButton14;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
@@ -2965,6 +3186,10 @@ private void shutdown() {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel40;
     private javax.swing.JLabel jLabel41;
+    private javax.swing.JLabel jLabel42;
+    private javax.swing.JLabel jLabel43;
+    private javax.swing.JLabel jLabel44;
+    private javax.swing.JLabel jLabel45;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
@@ -2979,15 +3204,18 @@ private void shutdown() {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane11;
     private javax.swing.JScrollPane jScrollPane12;
+    private javax.swing.JScrollPane jScrollPane13;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
@@ -2995,6 +3223,7 @@ private void shutdown() {
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JSeparator jSeparator6;
+    private javax.swing.JSeparator jSeparator7;
     private javax.swing.JTabbedPane jTabbedPane;
     private javax.swing.JTable jtBooking;
     private javax.swing.JPanel panelLogin;
