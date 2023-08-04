@@ -2552,7 +2552,7 @@ private void shutdown() {
 
         LabelNama.setFont(new java.awt.Font("Trebuchet MS", 1, 24)); // NOI18N
         LabelNama.setForeground(new java.awt.Color(255, 204, 102));
-        LabelNama.setText("SELAMAT DATANG ");
+        LabelNama.setText("Admin");
 
         jButton14.setBackground(new java.awt.Color(255, 102, 102));
         jButton14.setText("Back to Login Page");
